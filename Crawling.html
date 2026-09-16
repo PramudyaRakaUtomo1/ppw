@@ -753,6 +753,410 @@ Jumlah data: 100
 File: dataset_detik_finance_100.csv
 ================================</div>
 
+        <!-- CODEBOX DENGAN KODE -->
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-kw">import</span> requests
+<span class="hl-kw">from</span> bs4 <span class="hl-kw">import</span> BeautifulSoup
+<span class="hl-kw">import</span> pandas <span class="hl-kw">as</span> pd
+<span class="hl-kw">import</span> time
+<span class="hl-kw">from</span> urllib.parse <span class="hl-kw">import</span> urljoin
+
+BASE_URL = <span class="hl-str">"https://finance.detik.com"</span>
+INDEX_URL = <span class="hl-str">"https://finance.detik.com/indeks"</span>
+
+HEADERS = {
+    <span class="hl-str">"User-Agent"</span>: (
+        <span class="hl-str">"Mozilla/5.0 (Windows NT 10.0; Win64; x64) "</span>
+        <span class="hl-str">"AppleWebKit/537.36 (KHTML, like Gecko) "</span>
+        <span class="hl-str">"Chrome/140.0.0.0 Safari/537.36"</span>
+    )
+}
+
+TARGET = 100
+
+session = requests.<span class="hl-func">Session</span>()
+session.headers.<span class="hl-func">update</span>(HEADERS)
+
+artikel_urls = []
+artikel_set = <span class="hl-func">set</span>()
+
+
+<span class="hl-cmt"># ==========================================</span>
+<span class="hl-cmt"># 1. MENGAMBIL URL ARTIKEL DARI INDEKS</span>
+<span class="hl-cmt"># ==========================================</span>
+
+<span class="hl-kw">def</span> <span class="hl-def">ambil_url_artikel</span>(url_halaman):
+
+    <span class="hl-func">print</span>(<span class="hl-str">f"\nMengambil halaman: {url_halaman}"</span>)
+
+    response = session.<span class="hl-func">get</span>(
+        url_halaman,
+        timeout=15
+    )
+
+    response.<span class="hl-func">raise_for_status</span>()
+
+    soup = <span class="hl-func">BeautifulSoup</span>(
+        response.text,
+        <span class="hl-str">"html.parser"</span>
+    )
+
+    <span class="hl-kw">for</span> a <span class="hl-kw">in</span> soup.<span class="hl-func">find_all</span>(<span class="hl-str">"a"</span>, href=<span class="hl-kw">True</span>):
+
+        href = a[<span class="hl-str">"href"</span>]
+
+        <span class="hl-cmt"># Pastikan URL berasal dari finance.detik.com</span>
+        <span class="hl-kw">if</span> href.<span class="hl-func">startswith</span>(<span class="hl-str">"/"</span>):
+            href = <span class="hl-func">urljoin</span>(
+                BASE_URL,
+                href
+            )
+
+        <span class="hl-cmt"># Hanya artikel finance.detik.com</span>
+        <span class="hl-kw">if</span> <span class="hl-str">"finance.detik.com"</span> <span class="hl-kw">not in</span> href:
+            <span class="hl-kw">continue</span>
+
+        <span class="hl-cmt"># Artikel biasanya mempunyai /d-</span>
+        <span class="hl-kw">if</span> <span class="hl-str">"/d-"</span> <span class="hl-kw">not in</span> href:
+            <span class="hl-kw">continue</span>
+
+        <span class="hl-cmt"># Hindari duplikat</span>
+        <span class="hl-kw">if</span> href <span class="hl-kw">not in</span> artikel_set:
+
+            artikel_set.<span class="hl-func">add</span>(href)
+            artikel_urls.<span class="hl-func">append</span>(href)
+
+            <span class="hl-func">print</span>(
+                <span class="hl-str">f"[URL {len(artikel_urls)}] {href}"</span>
+            )
+
+        <span class="hl-kw">if</span> <span class="hl-func">len</span>(artikel_urls) >= TARGET:
+            <span class="hl-kw">break</span>
+
+
+<span class="hl-cmt"># ==========================================</span>
+<span class="hl-cmt"># 2. CRAWLING HALAMAN INDEKS</span>
+<span class="hl-cmt"># ==========================================</span>
+
+page = 1
+
+<span class="hl-kw">while</span> <span class="hl-func">len</span>(artikel_urls) &lt; TARGET:
+
+    <span class="hl-kw">if</span> page == 1:
+        url = INDEX_URL
+    <span class="hl-kw">else</span>:
+        url = <span class="hl-str">f"{INDEX_URL}?page={page}"</span>
+
+    <span class="hl-kw">try</span>:
+
+        jumlah_sebelumnya = <span class="hl-func">len</span>(artikel_urls)
+
+        <span class="hl-func">ambil_url_artikel</span>(url)
+
+        <span class="hl-cmt"># Jika tidak menemukan URL baru</span>
+        <span class="hl-kw">if</span> <span class="hl-func">len</span>(artikel_urls) == jumlah_sebelumnya:
+
+            <span class="hl-func">print</span>(
+                <span class="hl-str">"Tidak ada URL baru ditemukan."</span>
+            )
+
+            <span class="hl-kw">break</span>
+
+        page += 1
+
+        time.<span class="hl-func">sleep</span>(1)
+
+    <span class="hl-kw">except</span> <span class="hl-type">Exception</span> <span class="hl-kw">as</span> e:
+
+        <span class="hl-func">print</span>(
+            <span class="hl-str">f"Error halaman {page}: {e}"</span>
+        )
+
+        page += 1
+
+
+<span class="hl-func">print</span>(<span class="hl-str">"\n================================"</span>)
+<span class="hl-func">print</span>(<span class="hl-str">"TOTAL URL ARTIKEL:"</span>, <span class="hl-func">len</span>(artikel_urls))
+<span class="hl-func">print</span>(<span class="hl-str">"================================"</span>)
+
+
+<span class="hl-cmt"># ==========================================</span>
+<span class="hl-cmt"># 3. MENGAMBIL DETAIL ARTIKEL</span>
+<span class="hl-cmt"># ==========================================</span>
+
+data = []
+
+<span class="hl-kw">for</span> i, url <span class="hl-kw">in</span> <span class="hl-func">enumerate</span>(
+    artikel_urls[:TARGET],
+    start=1
+):
+
+    <span class="hl-func">print</span>(
+        <span class="hl-str">f"\n[{i}/{TARGET}] Crawling:"</span>
+    )
+
+    <span class="hl-func">print</span>(url)
+
+    <span class="hl-kw">try</span>:
+
+        response = session.<span class="hl-func">get</span>(
+            url,
+            timeout=15
+        )
+
+        response.<span class="hl-func">raise_for_status</span>()
+
+        soup = <span class="hl-func">BeautifulSoup</span>(
+            response.text,
+            <span class="hl-str">"html.parser"</span>
+        )
+
+
+        <span class="hl-cmt"># -----------------------------</span>
+        <span class="hl-cmt"># JUDUL</span>
+        <span class="hl-cmt"># -----------------------------</span>
+
+        title = soup.<span class="hl-func">find</span>(<span class="hl-str">"h1"</span>)
+
+        <span class="hl-kw">if</span> title:
+            title = title.<span class="hl-func">get_text</span>(
+                <span class="hl-str">" "</span>,
+                strip=<span class="hl-kw">True</span>
+            )
+        <span class="hl-kw">else</span>:
+            title = <span class="hl-str">""</span>
+
+
+        <span class="hl-cmt"># -----------------------------</span>
+        <span class="hl-cmt"># TANGGAL</span>
+        <span class="hl-cmt"># -----------------------------</span>
+
+        tanggal = <span class="hl-str">""</span>
+
+        <span class="hl-cmt"># Beberapa struktur detik</span>
+        time_tag = soup.<span class="hl-func">find</span>(
+            <span class="hl-str">"time"</span>
+        )
+
+        <span class="hl-kw">if</span> time_tag:
+
+            tanggal = time_tag.<span class="hl-func">get_text</span>(
+                <span class="hl-str">" "</span>,
+                strip=<span class="hl-kw">True</span>
+            )
+
+        <span class="hl-kw">else</span>:
+
+            <span class="hl-cmt"># Coba cari class date</span>
+            date_tag = soup.<span class="hl-func">find</span>(
+                class_=<span class="hl-kw">lambda</span> x:
+                x <span class="hl-kw">and</span> <span class="hl-str">"date"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>()
+            )
+
+            <span class="hl-kw">if</span> date_tag:
+
+                tanggal = date_tag.<span class="hl-func">get_text</span>(
+                    <span class="hl-str">" "</span>,
+                    strip=<span class="hl-kw">True</span>
+                )
+
+
+        <span class="hl-cmt"># -----------------------------</span>
+        <span class="hl-cmt"># PENULIS</span>
+        <span class="hl-cmt"># -----------------------------</span>
+
+        penulis = <span class="hl-str">""</span>
+
+        author_tag = soup.<span class="hl-func">find</span>(
+            class_=<span class="hl-kw">lambda</span> x:
+            x <span class="hl-kw">and</span> (
+                <span class="hl-str">"author"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>()
+                <span class="hl-kw">or</span> <span class="hl-str">"redaktur"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>()
+            )
+        )
+
+        <span class="hl-kw">if</span> author_tag:
+
+            penulis = author_tag.<span class="hl-func">get_text</span>(
+                <span class="hl-str">" "</span>,
+                strip=<span class="hl-kw">True</span>
+            )
+
+
+        <span class="hl-cmt"># -----------------------------</span>
+        <span class="hl-cmt"># ISI ARTIKEL</span>
+        <span class="hl-cmt"># -----------------------------</span>
+
+        paragraphs = []
+
+        <span class="hl-cmt"># Cari container artikel</span>
+        article_body = soup.<span class="hl-func">find</span>(
+            <span class="hl-str">"div"</span>,
+            class_=<span class="hl-kw">lambda</span> x:
+            x <span class="hl-kw">and</span> (
+                <span class="hl-str">"detail__body"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x)
+                <span class="hl-kw">or</span> <span class="hl-str">"article"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>()
+            )
+        )
+
+        <span class="hl-kw">if</span> article_body:
+
+            <span class="hl-kw">for</span> p <span class="hl-kw">in</span> article_body.<span class="hl-func">find_all</span>(<span class="hl-str">"p"</span>):
+
+                text = p.<span class="hl-func">get_text</span>(
+                    <span class="hl-str">" "</span>,
+                    strip=<span class="hl-kw">True</span>
+                )
+
+                <span class="hl-kw">if</span> text:
+
+                    paragraphs.<span class="hl-func">append</span>(
+                        text
+                    )
+
+        <span class="hl-cmt"># Jika container tidak ditemukan</span>
+        <span class="hl-kw">if</span> <span class="hl-kw">not</span> paragraphs:
+
+            <span class="hl-kw">for</span> p <span class="hl-kw">in</span> soup.<span class="hl-func">find_all</span>(<span class="hl-str">"p"</span>):
+
+                text = p.<span class="hl-func">get_text</span>(
+                    <span class="hl-str">" "</span>,
+                    strip=<span class="hl-kw">True</span>
+                )
+
+                <span class="hl-kw">if</span> text:
+
+                    paragraphs.<span class="hl-func">append</span>(
+                        text
+                    )
+
+
+        isi = <span class="hl-str">" "</span>.<span class="hl-func">join</span>(
+            paragraphs
+        )
+
+
+        <span class="hl-cmt"># -----------------------------</span>
+        <span class="hl-cmt"># SIMPAN</span>
+        <span class="hl-cmt"># -----------------------------</span>
+
+        data.<span class="hl-func">append</span>({
+
+            <span class="hl-str">"id"</span>: i,
+
+            <span class="hl-str">"judul"</span>: title,
+
+            <span class="hl-str">"tanggal"</span>: tanggal,
+
+            <span class="hl-str">"penulis"</span>: penulis,
+
+            <span class="hl-str">"url"</span>: url,
+
+            <span class="hl-str">"isi"</span>: isi
+
+        })
+
+
+        <span class="hl-func">print</span>(
+            <span class="hl-str">"Berhasil:"</span>,
+            title
+        )
+
+        time.<span class="hl-func">sleep</span>(1)
+
+
+    <span class="hl-kw">except</span> <span class="hl-type">Exception</span> <span class="hl-kw">as</span> e:
+
+        <span class="hl-func">print</span>(
+            <span class="hl-str">"Gagal:"</span>,
+            e
+        )
+
+
+<span class="hl-cmt"># ==========================================</span>
+<span class="hl-cmt"># 4. DATAFRAME</span>
+<span class="hl-cmt"># ==========================================</span>
+
+df = pd.<span class="hl-func">DataFrame</span>(data)
+
+
+<span class="hl-cmt"># ==========================================</span>
+<span class="hl-cmt"># 5. BATASI 100 DATA</span>
+<span class="hl-cmt"># ==========================================</span>
+
+df = df.<span class="hl-func">head</span>(100)
+
+
+<span class="hl-cmt"># ==========================================</span>
+<span class="hl-cmt"># 6. SIMPAN CSV</span>
+<span class="hl-cmt"># ==========================================</span>
+
+df.<span class="hl-func">to_csv</span>(
+    <span class="hl-str">"dataset_detik_finance_100.csv"</span>,
+    index=<span class="hl-kw">False</span>,
+    encoding=<span class="hl-str">"utf-8-sig"</span>
+)
+
+
+<span class="hl-func">print</span>(<span class="hl-str">"\n================================"</span>)
+<span class="hl-func">print</span>(<span class="hl-str">"CRAWLING SELESAI"</span>)
+<span class="hl-func">print</span>(<span class="hl-str">"Jumlah data:"</span>, <span class="hl-func">len</span>(df))
+<span class="hl-func">print</span>(<span class="hl-str">"File: dataset_detik_finance_100.csv"</span>)
+<span class="hl-func">print</span>(<span class="hl-str">"================================"</span>)
+
+
+<span class="hl-cmt"># ==========================================</span>
+<span class="hl-cmt"># 7. TAMPILKAN DATA</span>
+<span class="hl-cmt"># ==========================================</span>
+
+<span class="hl-func">print</span>(
+    df[
+        [
+            <span class="hl-str">"id"</span>,
+            <span class="hl-str">"judul"</span>,
+            <span class="hl-str">"tanggal"</span>,
+            <span class="hl-str">"penulis"</span>,
+            <span class="hl-str">"url"</span>
+        ]
+    ].<span class="hl-func">to_string</span>(
+        index=<span class="hl-kw">False</span>
+    )
+)</code></pre>
+      </div>
+
+      <!-- OUTPUT CELL DENGAN HASIL CRAWLING -->
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Mengambil halaman: https://finance.detik.com/indeks
+[URL 1] https://finance.detik.com/berita-ekonomi-bisnis/d-7788990/harga-emas-hari-ini-naik
+[URL 2] https://finance.detik.com/moneter/d-7788985/pemerintah-dorong-insentif-umkm
+...
+[URL 100] https://finance.detik.com/bursa-valas/d-7788100/kurs-rupiah-hari-ini
+
+================================
+TOTAL URL ARTIKEL: 100
+================================
+
+[1/100] Crawling:
+https://finance.detik.com/berita-ekonomi-bisnis/d-7788990/harga-emas-hari-ini-naik
+Berhasil: Harga Emas Hari Ini Naik Pasca Sentimen Pasar Global
+
+[2/100] Crawling:
+https://finance.detik.com/moneter/d-7788985/pemerintah-dorong-insentif-umkm
+Berhasil: Pemerintah Dorong Insentif Sektor UMKM Kerajinan
+
+...
+
+================================
+CRAWLING SELESAI
+Jumlah data: 100
+File: dataset_detik_finance_100.csv
+================================</div>
+        
         <!-- TABEL HASIL DATAFRAME PRINT -->
         <table class="dataframe-table">
           <thead>
