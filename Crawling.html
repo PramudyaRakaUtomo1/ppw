@@ -9,8 +9,18 @@
       --sidebar: #b6b6b6;
       --sidebarText: #000000;
       --content: #ffffff;
-      --codeBg: #1e1e1e;
       --accent: #4caf50;
+
+      /* Tema Gelap Editor & Notebook */
+      --editorBg: #1e1e1e;
+      --outputBg: #252526;
+      --tableBg: #1e1e1e;
+      --editorText: #d4d4d4;
+      --hlFunc: #dcdcaa;
+      --hlStr: #ce9178;
+      --hlCmt: #6a9955;
+      --hlDef: #9cdcfe;
+      --hlType: #4ec9b0;
     }
 
     * {
@@ -24,12 +34,14 @@
       background: linear-gradient(#d9f0ff, #e8ffe6);
     }
 
+    /* Layout umum */
     .container {
       display: grid;
       grid-template-columns: 260px 1fr;
       min-height: 100vh;
     }
 
+    /* Sidebar Kiri */
     .sidebar {
       background: var(--sidebar);
       color: var(--sidebarText);
@@ -40,6 +52,34 @@
       overflow-y: auto;
     }
 
+    .menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li {
+      padding: 8px 6px;
+      border-radius: 4px;
+    }
+
+    .menu li + li {
+      margin-top: 6px;
+    }
+
+    .menu a {
+      color: #000000;
+      text-decoration: none;
+      display: block;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .menu a:hover {
+      background: #ffffff;
+    }
+
+    /* Search Box */
     .search-box {
       display: flex;
       width: 100%;
@@ -59,24 +99,6 @@
       border-color: var(--accent);
     }
 
-    .menu {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .menu a {
-      color: #000000;
-      text-decoration: none;
-      display: block;
-      padding: 8px;
-      border-radius: 4px;
-    }
-
-    .menu a:hover {
-      background: #ffffff;
-    }
-
     #no-result {
       display: none;
       font-size: 13px;
@@ -84,6 +106,7 @@
       padding: 8px;
     }
 
+    /* Panel Konten Utama */
     .content {
       padding: 20px;
       background: var(--content);
@@ -95,45 +118,98 @@
     }
 
     /* =========================
-       STYLING CODE BOX BARU
+       NOTEBOOK & EDITOR DARK STYLE
        ========================= */
-    .code-box {
-      background-color: var(--codeBg);
+
+    /* 1. Code Editor Box */
+    .code-editor-box {
+      background-color: var(--editorBg);
       border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      margin: 20px 0;
+      margin: 15px 0;
       border: 1px solid #333;
     }
 
-    .code-box::before {
-      content: "";
-      display: block;
-      background-color: #252526;
-      border-bottom: 1px solid #333;
-      height: 36px;
-      background-image: 
-        radial-gradient(circle, #ff5f56 5px, transparent 6px),
-        radial-gradient(circle, #ffbd2e 5px, transparent 6px),
-        radial-gradient(circle, #27c93f 5px, transparent 6px);
-      background-position: 12px center, 28px center, 44px center;
-      background-repeat: no-repeat;
-    }
-
-    .code-box pre {
+    .code-editor-box pre {
       margin: 0;
       padding: 16px 20px;
       overflow-x: auto;
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
       font-size: 14px;
       line-height: 1.6;
-      color: #d4d4d4;
+      color: var(--editorText);
     }
 
-    .code-box code {
-      font-family: inherit;
+    /* Syntax Highlighting */
+    .hl-func { color: var(--hlFunc); }
+    .hl-str { color: var(--hlStr); font-style: italic; }
+    .hl-cmt { color: var(--hlCmt); font-style: italic; }
+    .hl-def { color: var(--hlDef); font-weight: bold; }
+    .hl-type { color: var(--hlType); }
+
+    /* 2. Output Teks Box */
+    .output-text-box {
+      background-color: var(--outputBg);
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin: 10px 0;
+      border: 1px solid #333;
     }
 
+    .output-text-box p {
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      color: #ffffff;
+    }
+
+    /* 3. Pandas DataFrame Box (Tabel) */
+    .pandas-table-box {
+      background-color: var(--tableBg);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 15px 0;
+      border: 1px solid #333;
+      overflow-x: auto;
+    }
+
+    .dataframe {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      color: #ffffff;
+    }
+
+    .dataframe th, .dataframe td {
+      border: 1px solid #444;
+      padding: 8px;
+    }
+
+    .dataframe thead th {
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .table-index {
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .table-text-column {
+      text-align: left;
+      min-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .table-url {
+      color: #acacac;
+      text-align: left;
+    }
+
+    /* Responsif Mobile */
     @media (max-width: 768px) {
       .container {
         grid-template-columns: 1fr;
@@ -147,13 +223,21 @@
 </head>
 <body>
   <div class="container">
+    <!-- SIDEBAR KIRI -->
     <aside class="sidebar" aria-label="Menu utama">
       <img src="PP.jpeg" width="200" height="200" alt="Profile" style="border-radius: 6px; max-width: 100%; height: auto;" />
 
+      <!-- SEARCH BOX -->
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off" />
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search..."
+          autocomplete="off"
+        />
       </div>
 
+      <!-- MENU -->
       <ul class="menu" id="menuList">
         <li><a href="profile.html">Profile</a></li>
         <li><a href="index.html">Pengantar Web Mining</a></li>
@@ -163,26 +247,96 @@
         <li><a href="Vectorization.html">Vectorization</a></li>
       </ul>
 
+      <!-- PESAN JIKA TIDAK ADA HASIL -->
       <div id="no-result">Halaman tidak ditemukan.</div>
     </aside>
 
+    <!-- KONTEN UTAMA -->
     <main class="content" role="main">
       <div class="github">
         <a href="https://github.com/PramudyaRakaUtomo1/ppw" target="_blank" rel="noopener">
-          <img src="github_PNG40.png" width="50" height="50" alt="GitHub Repository" />
+          <img
+            src="github_PNG40.png"
+            width="50"
+            height="50"
+            alt="GitHub Repository"
+          />
         </a>
       </div>
 
       <h1>Profile</h1>
       <section>
-        <div class="code-box">
-<pre><code>&lt;h1&gt;Hello World&lt;/h1&gt;
-&lt;p&gt;Ini adalah contoh HTML&lt;/p&gt;</code></pre>
+        
+        <!-- BAGIAN 1: CODE EDITOR BOX -->
+        <div class="code-editor-box">
+<pre><code>try:
+    <span class="hl-func">nltk.data.find</span>(<span class="hl-str">'corpora/omw-1.4'</span>)
+except <span class="hl-type">LookupError</span>:
+    <span class="hl-func">nltk.download</span>(<span class="hl-str">'omw-1.4'</span>, quiet=True)
+try:
+    <span class="hl-func">nltk.data.find</span>(<span class="hl-str">'corpora/omw-2.0'</span>)
+except <span class="hl-type">LookupError</span>:
+    <span class="hl-func">nltk.download</span>(<span class="hl-str">'omw-2.0'</span>, quiet=True)
+
+<span class="hl-cmt"># Load the new dataset</span>
+df = pd.<span class="hl-func">read_excel</span>(<span class="hl-str">"/content/detik_200_data.xlsx"</span>)
+print(<span class="hl-str">"Dataset `detik_200_data.xlsx` loaded:"</span>, df.shape)
+display(df.<span class="hl-func">head</span>(2))
+
+def <span class="hl-def">konteks</span>(daftar_teks, token, window=40):
+    <span class="hl-str">""""Mencari kemunculan pertama sebuah token di kumpulan teks, beserta potongan
+    kalimat di sekitarnya, agar setiap keputusan pembersihan bisa diperiksa
+    dalam konteks aslinya (bukan sekadar dipercaya begitu saja).""""</span>
+    pola = re.<span class="hl-func">compile</span>(<span class="hl-str">r"(?&lt;![A-Za-z])"</span> + re.<span class="hl-func">escape</span>(token) + <span class="hl-str">r"(?![A-Za-z])"</span>, re.IGNORECASE)
+    for teks in daftar_teks:
+        m = pola.<span class="hl-func">search</span>(teks)
+        if m:
+            mulai = max(0, m.<span class="hl-func">start</span>() - window)
+            return teks[mulai:m.<span class="hl-func">end</span>() + window].replace(<span class="hl-str">"\n"</span>, <span class="hl-str">" "</span>)
+    return <span class="hl-str">"(tidak ditemukan)"</span></code></pre>
         </div>
+
+        <!-- BAGIAN 2: OUTPUT TEKS BOX -->
+        <div class="output-text-box">
+          <p>Dataset `detik_200_data.xlsx` loaded: (200, 4)</p>
+        </div>
+
+        <!-- BAGIAN 3: PANDAS DATAFRAME (TABEL) -->
+        <div class="pandas-table-box">
+          <table class="dataframe">
+            <thead>
+              <tr>
+                <th></th>
+                <th>id</th>
+                <th style="text-align: left;">isi_berita</th>
+                <th style="text-align: left;">label</th>
+                <th style="text-align: left;">url</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="table-index">0</td>
+                <td style="text-align: right;">1</td>
+                <td class="table-text-column">Chef de Mission (CdM) Indonesia Todotua Pasari...</td>
+                <td style="text-align: left;">sport</td>
+                <td class="table-url">https://sport.detik.com/sport-lain/d-8655308/c...</td>
+              </tr>
+              <tr>
+                <td class="table-index">1</td>
+                <td style="text-align: right;">2</td>
+                <td class="table-text-column">Banjir besar melanda Nagoya, Jepang, menjelang...</td>
+                <td style="text-align: left;">sport</td>
+                <td class="table-url">https://sport.detik.com/sport-lain/d-8655303/a...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
       </section>
     </main>
   </div>
 
+  <!-- JAVASCRIPT SEARCH -->
   <script>
     const searchInput = document.getElementById("searchInput");
     const menuItems = document.querySelectorAll("#menuList li");
