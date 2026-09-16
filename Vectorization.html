@@ -471,6 +471,59 @@ df_full_tfidf.<span class="hl-func">to_excel</span>(
         </table>
         <div class="output-log">File 'data_tfidf_full_dataset.xlsx' berhasil disimpan.</div>
       </div>
+
+      <h2>Membagi Data 160 Training dan 40 Testing</h2>
+
+      <p>
+        Kode ini berfungsi untuk membagi dataset menjadi dua bagian, yaitu data latih (train) dan data uji (test) yang nantinya akan digunakan untuk melatih dan menguji model machine learning.
+      </p>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>X_train_text, X_test_text, y_train, y_test = <span class="hl-func">train_test_split</span>(
+    df[<span class="hl-str">"berita_clean"</span>],
+    df[<span class="hl-str">"label_num"</span>],
+    test_size=<span class="hl-str">40</span>,
+    random_state=<span class="hl-str">42</span>,
+    stratify=df[<span class="hl-str">"label_num"</span>]
+)
+
+<span class="hl-func">print</span>(
+    <span class="hl-str">"Jumlah training:"</span>,
+    <span class="hl-func">len</span>(X_train_text)
+)
+
+<span class="hl-func">print</span>(
+    <span class="hl-str">"Jumlah testing:"</span>,
+    <span class="hl-func">len</span>(X_test_text)
+)
+
+<span class="hl-func">print</span>(<span class="hl-str">"TRAINING"</span>)
+<span class="hl-func">print</span>(y_train.<span class="hl-func">value_counts</span>())
+
+<span class="hl-func">print</span>(<span class="hl-str">"\nTESTING"</span>)
+<span class="hl-func">print</span>(y_test.<span class="hl-func">value_counts</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Jumlah training: 160
+Jumlah testing: 40
+TRAINING
+label_num
+1    80
+0    80
+Name: count, dtype: int64
+
+TESTING
+label_num
+1    20
+0    20
+Name: count, dtype: int64</div>
+      </div>
       
 
     </main>
