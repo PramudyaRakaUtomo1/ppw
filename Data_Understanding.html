@@ -532,6 +532,67 @@ def konteks(daftar_teks, token, window=40):
           </tbody>
         </table>
       </div>
+      <!-- Section 2: Describe Data -->
+<h2 style="color: #000; margin-top: 30px;">2. Describe Data</h2>
+<p style="color: #333;">
+  Melakukan analisis deskriptif terhadap dataset untuk memeriksa struktur data, tipe data tiap kolom, pengecekan <i>null values</i>, serta statistik dasar panjang teks berita.
+</p>
+
+<div class="code-cell-container" style="background-color: #1e1e1e; border-left: 5px solid #34a853; border-radius: 8px; margin-bottom: 20px; color: #d4d4d4; font-family: monospace;">
+  <div style="padding: 10px 15px; background: #252526; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
+    <span style="color: #34a853; font-weight: bold;">[ ] Code - Describe Data</span>
+  </div>
+  <pre style="padding: 15px; margin: 0; overflow-x: auto; color: #9cdcfe;"><code># Ringkasan struktur data & tipe data
+print("=== INFO DATASET ===")
+df.info()
+
+print("\n=== PENGECEKAN NULL ===")
+print(df.isnull().sum())
+
+print("\n=== DISTRIBUSI LABEL ===")
+print(df['label'].value_counts())
+
+# Statistik panjang teks (jumlah kata)
+df['jumlah_kata'] = df['isi'].apply(lambda x: len(x.split()))
+print("\n=== STATISTIK JUMLAH KATA ===")
+print(df['jumlah_kata'].describe())</code></pre>
+
+  <!-- Output Box -->
+  <div style="background: #111; padding: 15px; border-top: 1px solid #333; color: #cccccc; font-size: 13px;">
+    <pre style="margin: 0; color: #b5aea1;">=== INFO DATASET ===
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 200 entries, 0 to 199
+Data columns (total 4 columns):
+ #   Column  Non-Null Count  Dtype 
+---  ------  --------------  ----- 
+ 0   id      200 non-null    int64 
+ 1   link    200 non-null    object
+ 2   isi     200 non-null    object
+ 3   label   200 non-null    object
+dtypes: int64(1), object(3)
+
+=== PENGECEKAN NULL ===
+id       0
+link     0
+isi      0
+label    0
+
+=== DISTRIBUSI LABEL ===
+label
+finance    100
+sport      100
+
+=== STATISTIK JUMLAH KATA ===
+count     200.000000
+mean      329.460000
+std       175.048302
+min        18.000000
+25%       238.500000
+50%       300.500000
+75%       395.250000
+max      1453.000000</pre>
+  </div>
+</div>
 
     </main>
   </div>
