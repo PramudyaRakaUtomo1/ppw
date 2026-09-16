@@ -11,17 +11,15 @@
       --content: #ffffff;
       --accent: #4caf50;
 
-      /* Tema Gelap Editor & Notebook */
+      /* Editor & Code Colors (Persis Gambar) */
       --editorBg: #1e1e1e;
-      --outputBg: #252526;
-      --tableBg: #1e1e1e;
       --editorText: #d4d4d4;
       --hlFunc: #dcdcaa;
       --hlStr: #ce9178;
       --hlCmt: #6a9955;
       --hlDef: #9cdcfe;
       --hlType: #4ec9b0;
-      --hlKeyword: #c586c0;
+      --hlKw: #c586c0;
     }
 
     * {
@@ -31,14 +29,14 @@
     html, body {
       height: 100%;
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(#d9f0ff, #e8ffe6);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #ffffff;
     }
 
     /* Layout umum */
     .container {
       display: grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 280px 1fr;
       min-height: 100vh;
     }
 
@@ -46,13 +44,40 @@
     .sidebar {
       background: var(--sidebar);
       color: var(--sidebarText);
-      padding: 20px;
+      padding: 24px 16px;
       position: sticky;
       top: 0;
       height: 100vh;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
+    .profile-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* Search Box */
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      background: #ffffff;
+      color: #333;
+    }
+
+    /* Menu Navigasi */
     .menu {
       list-style: none;
       padding: 0;
@@ -60,160 +85,148 @@
     }
 
     .menu li {
-      padding: 8px 6px;
-      border-radius: 4px;
-    }
-
-    .menu li + li {
-      margin-top: 6px;
+      margin-bottom: 8px;
     }
 
     .menu a {
       color: #000000;
       text-decoration: none;
       display: block;
-      padding: 8px;
-      border-radius: 4px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: background 0.2s;
     }
 
-    .menu a:hover {
+    /* Menu Aktif / Selected (Tampilan Pill Putih) */
+    .menu a.active {
       background: #ffffff;
-    }
-
-    /* Search Box */
-    .search-box {
-      display: flex;
-      width: 100%;
-      margin: 15px 0;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #999;
-      border-radius: 6px;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .search-box input:focus {
-      border-color: var(--accent);
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
     #no-result {
       display: none;
       font-size: 13px;
-      color: #555;
+      color: #444;
       padding: 8px;
     }
 
-    /* Panel Konten Utama */
+    /* Area Konten Utama */
     .content {
-      padding: 20px;
+      padding: 40px 60px;
       background: var(--content);
+      max-width: 1200px;
     }
 
-    .github {
+    .github-link {
       display: flex;
       justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .github-link img {
+      width: 36px;
+      height: 36px;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #000;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 35px;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #222;
+      margin-bottom: 16px;
+    }
+
+    ul.activities {
+      margin: 0 0 24px 20px;
+      padding: 0;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    ul.activities li {
+      margin-bottom: 6px;
     }
 
     /* =========================
-       NOTEBOOK & EDITOR DARK STYLE
+       CODE BOX / CELL JUPYTER
        ========================= */
 
-    /* 1. Code Editor Box */
-    .code-editor-box {
+    .code-cell {
       background-color: var(--editorBg);
-      border-radius: 8px;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+      margin: 20px 0;
+      position: relative;
       overflow: hidden;
-      margin: 15px 0;
-      border: 1px solid #333;
     }
 
-    .code-editor-box pre {
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px 0 16px;
+      color: #858585;
+      font-size: 12px;
+    }
+
+    .play-btn {
+      color: #858585;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .copy-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #858585;
+      background: none;
+      border: none;
+      font-size: 12px;
+      padding: 0;
+    }
+
+    .copy-btn:hover {
+      color: #ffffff;
+    }
+
+    .code-cell pre {
       margin: 0;
-      padding: 16px 20px;
+      padding: 10px 16px 18px 16px;
       overflow-x: auto;
       font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 13.5px;
+      line-height: 1.5;
       color: var(--editorText);
     }
 
     /* Syntax Highlighting */
+    .hl-kw { color: var(--hlKw); }
     .hl-func { color: var(--hlFunc); }
     .hl-str { color: var(--hlStr); }
     .hl-cmt { color: var(--hlCmt); font-style: italic; }
-    .hl-def { color: var(--hlDef); font-weight: bold; }
+    .hl-def { color: var(--hlDef); }
     .hl-type { color: var(--hlType); }
-    .hl-kw { color: var(--hlKeyword); font-weight: bold; }
 
-    /* 2. Output Teks Box */
-    .output-text-box {
-      background-color: var(--outputBg);
-      border-radius: 8px;
-      padding: 12px 20px;
-      margin: 10px 0;
-      border: 1px solid #333;
-    }
-
-    .output-text-box p {
-      margin: 0;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 13px;
-      color: #ffffff;
-      line-height: 1.5;
-    }
-
-    /* 3. Pandas DataFrame Box (Tabel) */
-    .pandas-table-box {
-      background-color: var(--tableBg);
-      border-radius: 8px;
-      padding: 10px;
-      margin: 15px 0;
-      border: 1px solid #333;
-      overflow-x: auto;
-    }
-
-    .dataframe {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 13px;
-      color: #ffffff;
-    }
-
-    .dataframe th, .dataframe td {
-      border: 1px solid #444;
-      padding: 8px;
-    }
-
-    .dataframe thead th {
-      font-weight: bold;
-      text-align: left;
-    }
-
-    .table-index {
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .table-text-column {
-      text-align: left;
-      min-width: 250px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .table-url {
-      color: #acacac;
-      text-align: left;
-      min-width: 200px;
-    }
-
-    /* Responsif Mobile */
     @media (max-width: 768px) {
       .container {
         grid-template-columns: 1fr;
@@ -222,6 +235,9 @@
         position: static;
         height: auto;
       }
+      .content {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -229,7 +245,7 @@
   <div class="container">
     <!-- SIDEBAR KIRI -->
     <aside class="sidebar" aria-label="Menu utama">
-      <img src="PP.jpeg" width="200" height="200" alt="Profile" style="border-radius: 6px; max-width: 100%; height: auto;" />
+      <img src="PP.jpeg" alt="Profile" class="profile-img" />
 
       <!-- SEARCH BOX -->
       <div class="search-box">
@@ -246,33 +262,46 @@
         <li><a href="profile.html">Profile</a></li>
         <li><a href="index.html">Pengantar Web Mining</a></li>
         <li><a href="Data_Understanding.html">Data Understanding</a></li>
-        <li><a href="Crawling.html" style="font-weight: bold; background: #ffffff;">Crawling Data</a></li>
+        <li><a href="Crawling.html" class="active">Crawling Data</a></li>
         <li><a href="Preprocessing.html">Preprocessing</a></li>
         <li><a href="Vectorization.html">Vectorization</a></li>
       </ul>
 
-      <!-- PESAN JIKA TIDAK ADA HASIL -->
       <div id="no-result">Halaman tidak ditemukan.</div>
     </aside>
 
     <!-- KONTEN UTAMA -->
     <main class="content" role="main">
-      <div class="github">
+      <div class="github-link">
         <a href="https://github.com/PramudyaRakaUtomo1/ppw" target="_blank" rel="noopener">
-          <img
-            src="github_PNG40.png"
-            width="50"
-            height="50"
-            alt="GitHub Repository"
-          />
+          <svg height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true"><path fill="#000" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
         </a>
       </div>
 
-      <h1>Crawling Data dari detik.com</h1>
-      <section>
-        
-        <!-- BAGIAN 1: KODE PYTHON CRAWLING -->
-        <div class="code-editor-box">
+      <h1>Crawling Data</h1>
+
+      <p>
+        Pada tahap ini dilakukan proses pengumpulan (crawling) artikel berita dari portal <strong>detik.com</strong>, meliputi kategori finance dan sport, untuk membentuk dataset yang nantinya akan diolah pada tahap Preprocessing dan Modeling.
+      </p>
+
+      <p>Aktivitas utama:</p>
+      <ul class="activities">
+        <li><strong>Collect Data</strong> - Mengambil URL artikel berita dan menyerap isi artikel secara otomatis</li>
+        <li><strong>Save Dataset</strong> - Menyimpan hasil crawling ke dalam file CSV</li>
+      </ul>
+
+      <h2>1. Collect Data</h2>
+
+      <p>
+        Berikut adalah skrip Python yang digunakan untuk melakukan crawling data dari indeks berita <strong>detik.com</strong>:
+      </p>
+
+      <!-- JUPYTER CELL SKRIP PYTHON -->
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
 <pre><code><span class="hl-kw">import</span> requests
 <span class="hl-kw">from</span> bs4 <span class="hl-kw">import</span> BeautifulSoup
 <span class="hl-kw">import</span> pandas <span class="hl-kw">as</span> pd
@@ -298,9 +327,7 @@ session.headers.<span class="hl-func">update</span>(HEADERS)
 artikel_urls = []
 artikel_set = <span class="hl-func">set</span>()
 
-<span class="hl-cmt"># ==========================================</span>
 <span class="hl-cmt"># 1. MENGAMBIL URL ARTIKEL DARI INDEKS</span>
-<span class="hl-cmt"># ==========================================</span>
 <span class="hl-kw">def</span> <span class="hl-def">ambil_url_artikel</span>(url_halaman):
     <span class="hl-func">print</span>(<span class="hl-str">f"\nMengambil halaman: {url_halaman}"</span>)
     response = session.<span class="hl-func">get</span>(url_halaman, timeout=15)
@@ -323,179 +350,17 @@ artikel_set = <span class="hl-func">set</span>()
         <span class="hl-kw">if</span> href <span class="hl-kw">not in</span> artikel_set:
             artikel_set.<span class="hl-func">add</span>(href)
             artikel_urls.<span class="hl-func">append</span>(href)
-            <span class="hl-func">print</span>(<span class="hl-str">f"[URL {len(artikel_urls)}] {href}"</span>)
 
         <span class="hl-kw">if</span> <span class="hl-func">len</span>(artikel_urls) >= TARGET:
             <span class="hl-kw">break</span>
-
-<span class="hl-cmt"># ==========================================</span>
-<span class="hl-cmt"># 2. CRAWLING HALAMAN INDEKS</span>
-<span class="hl-cmt"># ==========================================</span>
-page = 1
-
-<span class="hl-kw">while</span> <span class="hl-func">len</span>(artikel_urls) &lt; TARGET:
-    url = INDEX_URL <span class="hl-kw">if</span> page == 1 <span class="hl-kw">else</span> <span class="hl-str">f"{INDEX_URL}?page={page}"</span>
-
-    <span class="hl-kw">try</span>:
-        jumlah_sebelumnya = <span class="hl-func">len</span>(artikel_urls)
-        <span class="hl-func">ambil_url_artikel</span>(url)
-
-        <span class="hl-kw">if</span> <span class="hl-func">len</span>(artikel_urls) == jumlah_sebelumnya:
-            <span class="hl-func">print</span>(<span class="hl-str">"Tidak ada URL baru ditemukan."</span>)
-            <span class="hl-kw">break</span>
-
-        page += 1
-        time.<span class="hl-func">sleep</span>(1)
-
-    <span class="hl-kw">except</span> <span class="hl-type">Exception</span> <span class="hl-kw">as</span> e:
-        <span class="hl-func">print</span>(<span class="hl-str">f"Error halaman {page}: {e}"</span>)
-        page += 1
-
-<span class="hl-func">print</span>(<span class="hl-str">"\n================================"</span>)
-<span class="hl-func">print</span>(<span class="hl-str">"TOTAL URL ARTIKEL:"</span>, <span class="hl-func">len</span>(artikel_urls))
-<span class="hl-func">print</span>(<span class="hl-str">"================================"</span>)
-
-<span class="hl-cmt"># ==========================================</span>
-<span class="hl-cmt"># 3. MENGAMBIL DETAIL ARTIKEL</span>
-<span class="hl-cmt"># ==========================================</span>
-data = []
-
-<span class="hl-kw">for</span> i, url <span class="hl-kw">in</span> <span class="hl-func">enumerate</span>(artikel_urls[:TARGET], start=1):
-    <span class="hl-func">print</span>(<span class="hl-str">f"\n[{i}/{TARGET}] Crawling:\n{url}"</span>)
-
-    <span class="hl-kw">try</span>:
-        response = session.<span class="hl-func">get</span>(url, timeout=15)
-        response.<span class="hl-func">raise_for_status</span>()
-        soup = <span class="hl-func">BeautifulSoup</span>(response.text, <span class="hl-str">"html.parser"</span>)
-
-        title = soup.<span class="hl-func">find</span>(<span class="hl-str">"h1"</span>)
-        title = title.<span class="hl-func">get_text</span>(<span class="hl-str">" "</span>, strip=<span class="hl-kw">True</span>) <span class="hl-kw">if</span> title <span class="hl-kw">else</span> <span class="hl-str">""</span>
-
-        tanggal = <span class="hl-str">""</span>
-        time_tag = soup.<span class="hl-func">find</span>(<span class="hl-str">"time"</span>)
-        <span class="hl-kw">if</span> time_tag:
-            tanggal = time_tag.<span class="hl-func">get_text</span>(<span class="hl-str">" "</span>, strip=<span class="hl-kw">True</span>)
-        <span class="hl-kw">else</span>:
-            date_tag = soup.<span class="hl-func">find</span>(class_=<span class="hl-kw">lambda</span> x: x <span class="hl-kw">and</span> <span class="hl-str">"date"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>())
-            <span class="hl-kw">if</span> date_tag:
-                tanggal = date_tag.<span class="hl-func">get_text</span>(<span class="hl-str">" "</span>, strip=<span class="hl-kw">True</span>)
-
-        penulis = <span class="hl-str">""</span>
-        author_tag = soup.<span class="hl-func">find</span>(class_=<span class="hl-kw">lambda</span> x: x <span class="hl-kw">and</span> (<span class="hl-str">"author"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>() <span class="hl-kw">or</span> <span class="hl-str">"redaktur"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>()))
-        <span class="hl-kw">if</span> author_tag:
-            penulis = author_tag.<span class="hl-func">get_text</span>(<span class="hl-str">" "</span>, strip=<span class="hl-kw">True</span>)
-
-        paragraphs = []
-        article_body = soup.<span class="hl-func">find</span>(<span class="hl-str">"div"</span>, class_=<span class="hl-kw">lambda</span> x: x <span class="hl-kw">and</span> (<span class="hl-str">"detail__body"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x) <span class="hl-kw">or</span> <span class="hl-str">"article"</span> <span class="hl-kw">in</span> <span class="hl-func">str</span>(x).<span class="hl-func">lower</span>()))
-        
-        <span class="hl-kw">if</span> article_body:
-            <span class="hl-kw">for</span> p <span class="hl-kw">in</span> article_body.<span class="hl-func">find_all</span>(<span class="hl-str">"p"</span>):
-                text = p.<span class="hl-func">get_text</span>(<span class="hl-str">" "</span>, strip=<span class="hl-kw">True</span>)
-                <span class="hl-kw">if</span> text:
-                    paragraphs.<span class="hl-func">append</span>(text)
-
-        <span class="hl-kw">if</span> <span class="hl-kw">not</span> paragraphs:
-            <span class="hl-kw">for</span> p <span class="hl-kw">in</span> soup.<span class="hl-func">find_all</span>(<span class="hl-str">"p"</span>):
-                text = p.<span class="hl-func">get_text</span>(<span class="hl-str">" "</span>, strip=<span class="hl-kw">True</span>)
-                <span class="hl-kw">if</span> text:
-                    paragraphs.<span class="hl-func">append</span>(text)
-
-        isi = <span class="hl-str">" "</span>.<span class="hl-func">join</span>(paragraphs)
-
-        data.<span class="hl-func">append</span>({
-            <span class="hl-str">"id"</span>: i,
-            <span class="hl-str">"judul"</span>: title,
-            <span class="hl-str">"tanggal"</span>: tanggal,
-            <span class="hl-str">"penulis"</span>: penulis,
-            <span class="hl-str">"url"</span>: url,
-            <span class="hl-str">"isi"</span>: isi
-        })
-
-        <span class="hl-func">print</span>(<span class="hl-str">"Berhasil:"</span>, title)
-        time.<span class="hl-func">sleep</span>(1)
-
-    <span class="hl-kw">except</span> <span class="hl-type">Exception</span> <span class="hl-kw">as</span> e:
-        <span class="hl-func">print</span>(<span class="hl-str">"Gagal:"</span>, e)
-
-<span class="hl-cmt"># ==========================================</span>
-<span class="hl-cmt"># 4, 5, 6. SIMPAN DATAFRAME KE CSV</span>
-<span class="hl-cmt"># ==========================================</span>
-df = pd.<span class="hl-func">DataFrame</span>(data).<span class="hl-func">head</span>(100)
-df.<span class="hl-func">to_csv</span>(<span class="hl-str">"dataset_detik_finance_100.csv"</span>, index=<span class="hl-kw">False</span>, encoding=<span class="hl-str">"utf-8-sig"</span>)
-
-<span class="hl-func">print</span>(<span class="hl-str">"\n================================"</span>)
-<span class="hl-func">print</span>(<span class="hl-str">"CRAWLING SELESAI"</span>)
-<span class="hl-func">print</span>(<span class="hl-str">"Jumlah data:"</span>, <span class="hl-func">len</span>(df))
-<span class="hl-func">print</span>(<span class="hl-str">"File: dataset_detik_finance_100.csv"</span>)
-<span class="hl-func">print</span>(<span class="hl-str">"================================"</span>)
 </code></pre>
-        </div>
+      </div>
 
-        <!-- BAGIAN 2: CONSOLE LOG OUTPUT -->
-        <div class="output-text-box">
-          <p>
-            Mengambil halaman: https://finance.detik.com/indeks<br>
-            [URL 1] https://finance.detik.com/berita-ekonomi-bisnis/d-7788990/harga-emas-hari-ini<br>
-            ...<br>
-            ================================<br>
-            CRAWLING SELESAI<br>
-            Jumlah data: 100<br>
-            File: dataset_detik_finance_100.csv<br>
-            ================================
-          </p>
-        </div>
-
-        <!-- BAGIAN 3: PANDAS DATAFRAME TAMPILAN 100 DATA -->
-        <div class="pandas-table-box">
-          <table class="dataframe">
-            <thead>
-              <tr>
-                <th>id</th>
-                <th>judul</th>
-                <th>tanggal</th>
-                <th>penulis</th>
-                <th>url</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="table-index">1</td>
-                <td class="table-text-column">Harga Emas Hari Ini Naik Pasca Sentimen Pasar Global</td>
-                <td class="table-text-column">Rabu, 16 Sep 2026 10:15 WIB</td>
-                <td class="table-text-column">Tim Detik Finance</td>
-                <td class="table-url">https://finance.detik.com/berita-ekonomi-bisnis/d-7788990/...</td>
-              </tr>
-              <tr>
-                <td class="table-index">2</td>
-                <td class="table-text-column">Pemerintah Dorong Insentif Sektor UMKM Kerajinan</td>
-                <td class="table-text-column">Rabu, 16 Sep 2026 09:30 WIB</td>
-                <td class="table-text-column">Redaksi Finance</td>
-                <td class="table-url">https://finance.detik.com/moneter/d-7788985/...</td>
-              </tr>
-              <tr>
-                <td class="table-index">...</td>
-                <td class="table-text-column">...</td>
-                <td class="table-text-column">...</td>
-                <td class="table-text-column">...</td>
-                <td class="table-url">...</td>
-              </tr>
-              <tr>
-                <td class="table-index">100</td>
-                <td class="table-text-column">Pergerakan Kurs Rupiah Melawan Dolar AS Hari Ini</td>
-                <td class="table-text-column">Selasa, 15 Sep 2026 18:00 WIB</td>
-                <td class="table-text-column">Analisis Pasar</td>
-                <td class="table-url">https://finance.detik.com/bursa-valas/d-7788100/...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </section>
     </main>
   </div>
 
-  <!-- JAVASCRIPT SEARCH -->
   <script>
+    // Live Search Sidebar
     const searchInput = document.getElementById("searchInput");
     const menuItems = document.querySelectorAll("#menuList li");
     const noResult = document.getElementById("no-result");
@@ -527,6 +392,20 @@ df.<span class="hl-func">to_csv</span>(<span class="hl-str">"dataset_detik_finan
         noResult.style.display = "none";
       }
     });
+
+    // Copy Code Functionality
+    function copyCode(button) {
+      const codeBlock = button.closest('.code-cell').querySelector('code');
+      const textToCopy = codeBlock.innerText;
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalText = button.innerHTML;
+        button.innerHTML = 'copied! ✓';
+        setTimeout(() => {
+          button.innerHTML = originalText;
+        }, 2000);
+      });
+    }
   </script>
 </body>
 </html>
