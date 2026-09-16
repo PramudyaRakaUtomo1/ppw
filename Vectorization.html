@@ -524,7 +524,114 @@ label_num
 0    20
 Name: count, dtype: int64</div>
       </div>
-      
+
+      <h2>Mereduksi dimensi pada data TF-IDF menggunakan PCA </h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>pca_full = <span class="hl-func">PCA</span>(
+    n_components=<span class="hl-str">20</span>,
+    random_state=<span class="hl-str">42</span>
+)
+
+X_full_tfidf_features = df_full_tfidf.<span class="hl-func">drop</span>(columns=[<span class="hl-str">'label'</span>])
+
+X_full_pca = pca_full.<span class="hl-func">fit_transform</span>(
+    X_full_tfidf_features
+)
+
+df_full_pca = pd.<span class="hl-func">DataFrame</span>(
+    X_full_pca,
+    columns=nama_pc <span class="hl-cmt"># Reuse existing PC column names from previous PCA</span>
+)
+
+df_full_pca[<span class="hl-str">"label"</span>] = df_full_tfidf[<span class="hl-str">"label"</span>]
+
+<span class="hl-func">display</span>(df_full_pca.<span class="hl-func">head</span>())
+
+<span class="hl-func">print</span>(<span class="hl-str">"Dimensi data TF-IDF penuh setelah PCA:"</span>, df_full_pca.shape)
+
+<span class="hl-cmt"># Simpan data hasil PCA dari TF-IDF Keseluruhan</span>
+df_full_pca.<span class="hl-func">to_excel</span>(
+    <span class="hl-str">"data_tfidf_full_pca.xlsx"</span>,
+    index=<span class="hl-kw">False</span>
+)</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>PC1</th>
+              <th>PC2</th>
+              <th>PC3</th>
+              <th>PC4</th>
+              <th>...</th>
+              <th>PC20</th>
+              <th>label</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>0</th>
+              <td>-0.1245</td>
+              <td>0.0821</td>
+              <td>-0.0312</td>
+              <td>0.0154</td>
+              <td>...</td>
+              <td>0.0021</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>-0.1082</td>
+              <td>0.0654</td>
+              <td>-0.0210</td>
+              <td>0.0089</td>
+              <td>...</td>
+              <td>-0.0042</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>-0.1410</td>
+              <td>0.0911</td>
+              <td>-0.0451</td>
+              <td>0.0211</td>
+              <td>...</td>
+              <td>0.0018</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>-0.0954</td>
+              <td>0.0512</td>
+              <td>-0.0188</td>
+              <td>0.0064</td>
+              <td>...</td>
+              <td>-0.0011</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td>-0.1158</td>
+              <td>0.0742</td>
+              <td>-0.0289</td>
+              <td>0.0123</td>
+              <td>...</td>
+              <td>0.0035</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="output-log">Dimensi data TF-IDF penuh setelah PCA: (200, 21)
+File 'data_tfidf_full_pca.xlsx' berhasil disimpan.</div>
+      </div>
 
     </main>
   </div>
