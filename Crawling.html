@@ -296,9 +296,12 @@
 </head>
 <body>
   <div class="container">
-    <!-- SIDEBAR KIRI -->
+    <!-- =========================
+         SIDEBAR KIRI
+         ========================= -->
     <aside class="sidebar" aria-label="Menu utama">
-      <img src="PP.jpeg" alt="Profile" class="profile-img" />
+
+      <img src="PP.jpeg" width="200" height="200" alt="Profile" style="border-radius: 6px; max-width: 100%; height: auto;" />
 
       <!-- SEARCH BOX -->
       <div class="search-box">
@@ -312,17 +315,51 @@
 
       <!-- MENU -->
       <ul class="menu" id="menuList">
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="index.html">Pengantar Web Mining</a></li>
-        <li><a href="Data_Understanding.html">Data Understanding</a></li>
-        <li><a href="Crawling.html" class="active">Crawling Data</a></li>
-        <li><a href="Preprocessing.html">Preprocessing</a></li>
-        <li><a href="Vectorization.html">Vectorization</a></li>
+
+        <li>
+          <a href="profile.html">
+            Profile
+          </a>
+        </li>
+
+        <li>
+          <a href="index.html">
+            Pengantar Web Mining
+          </a>
+        </li>
+
+        <li>
+          <a href="Data_Understanding.html" style="font-weight: bold; background: #ffffff;">
+            Data Understanding
+          </a>
+        </li>
+
+        <li>
+          <a href="Crawling.html">
+            Crawling Data
+          </a>
+        </li>
+
+        <li>
+          <a href="Preprocessing.html">
+            Preprocessing
+          </a>
+        </li>
+
+        <li>
+          <a href="Vectorization.html">
+            Vectorization
+          </a>
+        </li>
+
       </ul>
 
-      <div id="no-result">Halaman tidak ditemukan.</div>
-    </aside>
+      <!-- PESAN JIKA TIDAK ADA HASIL -->
+      <div id="no-result">
+        Halaman tidak ditemukan.
+      </div>
 
+    </aside>
     <!-- KONTEN UTAMA -->
     <main class="content" role="main">
       <div class="github-link">
