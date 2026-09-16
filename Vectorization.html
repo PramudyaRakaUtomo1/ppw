@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preprocessing Data - Web Mining</title>
+  <style>
+    :root {
+      --sidebar: #b6b6b6;
+      --sidebarText: #000000;
+      --content: #ffffff;
+      --accent: #4caf50;
+
+      /* Editor & Code Colors */
+      --editorBg: #1e1e1e;
+      --outputBg: #181818;
+      --editorText: #d4d4d4;
+      --hlFunc: #dcdcaa;
+      --hlStr: #ce9178;
+      --hlCmt: #6a9955;
+      --hlDef: #9cdcfe;
+      --hlType: #4ec9b0;
+      --hlKw: #c586c0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #ffffff;
+    }
+
+    /* Layout umum */
+    .container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Kiri */
+    .sidebar {
+      background: var(--sidebar);
+      color: var(--sidebarText);
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* Search Box */
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      background: #ffffff;
+      color: #333;
+    }
+
+    /* Menu Navigasi */
+    .menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li {
+      margin-bottom: 8px;
+    }
+
+    .menu a {
+      color: #000000;
+      text-decoration: none;
+      display: block;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: background 0.2s;
+    }
+
+    .menu a.active {
+      background: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    #no-result {
+      display: none;
+      font-size: 13px;
+      color: #444;
+      padding: 8px;
+    }
+
+    /* Area Konten Utama */
+    .content {
+      padding: 40px 60px;
+      background: var(--content);
+      max-width: 1200px;
+    }
+
+    .github-link {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #000;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 35px;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #222;
+      margin-bottom: 16px;
+    }
+
+    ul.activities {
+      margin: 0 0 24px 20px;
+      padding: 0;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    ul.activities li {
+      margin-bottom: 6px;
+    }
+
+    /* =========================
+       CODE BOX / CELL JUPYTER
+       ========================= */
+
+    .code-cell {
+      background-color: var(--editorBg);
+      border-radius: 6px 6px 0 0;
+      border-left: 4px solid var(--accent);
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px 0 16px;
+      color: #858585;
+      font-size: 12px;
+    }
+
+    .play-btn {
+      color: #858585;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .copy-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #858585;
+      background: none;
+      border: none;
+      font-size: 12px;
+      padding: 0;
+    }
+
+    .copy-btn:hover {
+      color: #ffffff;
+    }
+
+    .code-cell pre {
+      margin: 0;
+      padding: 10px 16px 18px 16px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--editorText);
+    }
+
+    /* Output Cell Style (Notebook Style) */
+    .output-cell {
+      background-color: var(--outputBg);
+      border-radius: 0 0 6px 6px;
+      border-left: 4px solid #555;
+      border-top: 1px solid #333;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      color: #cccccc;
+      overflow-x: auto;
+    }
+
+    .output-label {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: bold;
+    }
+
+    .output-log {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      color: #d1d5db;
+    }
+
+    /* Custom Table Styling for DataFrame Output */
+    .dataframe-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .dataframe-table th, .dataframe-table td {
+      padding: 8px 10px;
+      border: 1px solid #333;
+      white-space: nowrap;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dataframe-table th {
+      background-color: #252526;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .dataframe-table tr:nth-child(even) {
+      background-color: #1e1e1e;
+    }
+
+    /* Syntax Highlighting */
+    .hl-kw { color: var(--hlKw); }
+    .hl-func { color: var(--hlFunc); }
+    .hl-str { color: var(--hlStr); }
+    .hl-cmt { color: var(--hlCmt); font-style: italic; }
+    .hl-def { color: var(--hlDef); }
+    .hl-type { color: var(--hlType); }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+      .content {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- SIDEBAR KIRI -->
+    <aside class="sidebar" aria-label="Menu utama">
+
+      <img src="PP.jpeg" width="200" height="200" alt="Profile" style="border-radius: 6px; max-width: 100%; height: auto;" />
+
+      <!-- SEARCH BOX -->
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search..."
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- MENU -->
+      <ul class="menu" id="menuList">
+
+        <li>
+          <a href="profile.html">
+            Profile
+          </a>
+        </li>
+
+        <li>
+          <a href="index.html">
+            Pengantar Web Mining
+          </a>
+        </li>
+
+        <li>
+          <a href="Data_Understanding.html">
+            Data Understanding
+          </a>
+        </li>
+
+        <li>
+          <a href="Crawling.html">
+            Crawling Data
+          </a>
+        </li>
+
+        <li>
+          <a href="Preprocessing.html" class="active">
+            Preprocessing
+          </a>
+        </li>
+
+        <li>
+          <a href="Vectorization.html">
+            Vectorization
+          </a>
+        </li>
+
+      </ul>
+
+      <!-- PESAN JIKA TIDAK ADA HASIL -->
+      <div id="no-result">
+        Halaman tidak ditemukan.
+      </div>
+
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="content" role="main">
+      <div class="github-link">
+        <a href="https://github.com/PramudyaRakaUtomo1/ppw" target="_blank" rel="noopener">
+          <svg height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true"><path fill="#000" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+        </a>
+      </div>
+
+      <h1>Preprocessing Data</h1>
+
+      <p>
+        Tahap ini bertujuan untuk membersihkan teks berita dari derau (noise), mengubah huruf menjadi kecil, menghilangkan angka dan tanda baca, serta melakukan normalisasi kata tidak baku dan bahasa asing.
+      </p>
+
+      <h2>1. Install & Import Library</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>!pip install pandas openpyxl numpy scikit-learn
+
+<span class="hl-kw">import</span> pandas <span class="hl-kw">as</span> pd
+<span class="hl-kw">import</span> numpy <span class="hl-kw">as</span> np
+<span class="hl-kw">import</span> re
+
+<span class="hl-kw">from</span> scipy.sparse <span class="hl-kw">import</span> csr_matrix
+
+<span class="hl-kw">from</span> sklearn.model_selection <span class="hl-kw">import</span> train_test_split
+<span class="hl-kw">from</span> sklearn.feature_extraction.text <span class="hl-kw">import</span> TfidfVectorizer
+<span class="hl-kw">from</span> sklearn.decomposition <span class="hl-kw">import</span> PCA
+
+<span class="hl-kw">from</span> sklearn.linear_model <span class="hl-kw">import</span> LogisticRegression
+<span class="hl-kw">from</span> sklearn.metrics <span class="hl-kw">import</span> accuracy_score, classification_report, confusion_matrix</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Requirement already satisfied: pandas in /usr/local/lib/python3.10/dist-packages
+Requirement already satisfied: openpyxl in /usr/local/lib/python3.10/dist-packages
+Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages
+Requirement already satisfied: scikit-learn in /usr/local/lib/python3.10/dist-packages</div>
+      </div>
+
+      <h2>2. Membaca Dataset & Cek Informasi Data</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>df = pd.<span class="hl-func">read_excel</span>(<span class="hl-str">"/content/detik_200_data.xlsx"</span>)
+
+df.<span class="hl-func">head</span>()
+
+<span class="hl-func">print</span>(<span class="hl-str">"Jumlah data :"</span>, <span class="hl-func">len</span>(df))
+<span class="hl-func">print</span>(<span class="hl-str">"\nNama kolom:"</span>)
+<span class="hl-func">print</span>(df.columns)
+
+<span class="hl-func">print</span>(<span class="hl-str">"\nJumlah data per label:"</span>)
+<span class="hl-func">print</span>(df[<span class="hl-str">"label"</span>].<span class="hl-func">value_counts</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>link</th>
+              <th>isi</th>
+              <th>label</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>https://finance.detik.com/bursa-dan-valas/d-86...</td>
+              <td>Fitch Ratings Indonesia menurunkan peringkat n...</td>
+              <td>finance</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>https://finance.detik.com/berita-ekonomi-bisni...</td>
+              <td>PT Pelabuhan Indonesia (Persero) atau Pelindo ...</td>
+              <td>finance</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>https://finance.detik.com/berita-ekonomi-bisni...</td>
+              <td>Direktorat Jenderal Pajak (DJP) Kementerian Ke...	</td>
+              <td>finance</td>
+            </tr>
+            <tr>
+              <td>4</th>
+              <td>https://finance.detik.com/berita-ekonomi-bisni...</td>
+              <td>Kejaksaan Agung (Kejagung) menyatakan kesiapan...</td>
+              <td>finance</td>
+            </tr>
+            <tr>
+              <td>5</th>
+              <td>https://finance.detik.com/berita-ekonomi-bisni...</td>
+              <td>Pemerintah menindak tegas produsen beras forti...</td>
+              <td>finance</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="output-log">Jumlah data : 200
+
+Nama kolom:
+Index(['id','link', 'isi', 'label'], dtype='object')
+
+Jumlah data per label:
+label
+sport      100
+finance    100
+Name: count, dtype: int64</div>
+      </div>
+
+      <h2>3. Mengubah Label Menjadi Numerik</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>df[<span class="hl-str">"label_num"</span>] = df[<span class="hl-str">"label"</span>].<span class="hl-func">map</span>({
+    <span class="hl-str">"sport"</span>: 1,
+    <span class="hl-str">"finance"</span>: 0
+})
+
+df[[<span class="hl-str">"id"</span>, <span class="hl-str">"label"</span>, <span class="hl-str">"label_num"</span>]].<span class="hl-func">head</span>()
+
+<span class="hl-func">print</span>(df[<span class="hl-str">"label_num"</span>].<span class="hl-func">value_counts</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>label</th>
+              <th>label_num</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>finance</td><td>0</td></tr>
+            <tr><td>2</td><td>finance</td><td>0</td></tr>
+            <tr><td>3</td><td>finance</td><td>0</td></tr>
+            <tr><td>4</td><td>finance</td><td>0</td></tr>
+            <tr><td>5</td><td>finance</td><td>0</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">label_num
+1    100
+0    100
+Name: count, dtype: int64</div>
+      </div>
+
+      <h2>4. Menghitung Jumlah Kata Asli</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>df[<span class="hl-str">"jumlah_kata_asli"</span>] = df[<span class="hl-str">"isi"</span>].<span class="hl-func">astype</span>(<span class="hl-func">str</span>).<span class="hl-func">apply</span>(
+    <span class="hl-kw">lambda</span> x: <span class="hl-func">len</span>(x.<span class="hl-func">split</span>())
+)
+
+df[[<span class="hl-str">"id"</span>, <span class="hl-str">"jumlah_kata_asli"</span>]].<span class="hl-func">head</span>()
+
+total_kata = df[<span class="hl-str">"jumlah_kata_asli"</span>].<span class="hl-func">sum</span>()
+
+<span class="hl-func">print</span>(<span class="hl-str">"Total seluruh kata :"</span>, total_kata)
+<span class="hl-func">print</span>(df[<span class="hl-str">"jumlah_kata_asli"</span>].<span class="hl-func">describe</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>jumlah_kata_asli</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>282</td></tr>
+            <tr><td>2</td><td>694</td></tr>
+            <tr><td>3</td><td>358</td></tr>
+            <tr><td>4</td><td>659</td></tr>
+            <tr><td>5</td><td>511</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">Total seluruh kata : 65892
+count     200.000000
+mean      329.460000
+std       175.048302
+min        18.000000
+25%       238.500000
+50%       300.500000
+75%       395.250000
+max      1453.000000
+Name: jumlah_kata_asli, dtype: float64</div>
+      </div>
+
+      <h2>5. Kamus Kata Tidak Baku & Bahasa Asing</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>kamus_tidak_baku = {
+    <span class="hl-str">"gak"</span>: <span class="hl-str">"tidak"</span>, <span class="hl-str">"nggak"</span>: <span class="hl-str">"tidak"</span>, <span class="hl-str">"ga"</span>: <span class="hl-str">"tidak"</span>, <span class="hl-str">"enggak"</span>: <span class="hl-str">"tidak"</span>,
+    <span class="hl-str">"yg"</span>: <span class="hl-str">"yang"</span>, <span class="hl-str">"dgn"</span>: <span class="hl-str">"dengan"</span>, <span class="hl-str">"utk"</span>: <span class="hl-str">"untuk"</span>, <span class="hl-str">"krn"</span>: <span class="hl-str">"karena"</span>,
+    <span class="hl-str">"kalo"</span>: <span class="hl-str">"kalau"</span>, <span class="hl-str">"kalok"</span>: <span class="hl-str">"kalau"</span>, <span class="hl-str">"aja"</span>: <span class="hl-str">"saja"</span>, <span class="hl-str">"udah"</span>: <span class="hl-str">"sudah"</span>,
+    <span class="hl-str">"sdh"</span>: <span class="hl-str">"sudah"</span>, <span class="hl-str">"blm"</span>: <span class="hl-str">"belum"</span>, <span class="hl-str">"tdk"</span>: <span class="hl-str">"tidak"</span>, <span class="hl-str">"dr"</span>: <span class="hl-str">"dari"</span>,
+    <span class="hl-str">"dlm"</span>: <span class="hl-str">"dalam"</span>, <span class="hl-str">"jd"</span>: <span class="hl-str">"jadi"</span>, <span class="hl-str">"bgt"</span>: <span class="hl-str">"banget"</span>, <span class="hl-str">"tp"</span>: <span class="hl-str">"tetapi"</span>,
+    <span class="hl-str">"tapi"</span>: <span class="hl-str">"tetapi"</span>, <span class="hl-str">"karna"</span>: <span class="hl-str">"karena"</span>, <span class="hl-str">"trus"</span>: <span class="hl-str">"terus"</span>, <span class="hl-str">"kmrn"</span>: <span class="hl-str">"kemarin"</span>,
+    <span class="hl-str">"dpt"</span>: <span class="hl-str">"dapat"</span>, <span class="hl-str">"hrs"</span>: <span class="hl-str">"harus"</span>, <span class="hl-str">"sm"</span>: <span class="hl-str">"sama"</span>, <span class="hl-str">"sy"</span>: <span class="hl-str">"saya"</span>
+}
+
+kamus_asing = {
+    <span class="hl-cmt"># SPORT</span>
+    <span class="hl-str">"rider"</span>: <span class="hl-str">"pembalap"</span>, <span class="hl-str">"race"</span>: <span class="hl-str">"balapan"</span>, <span class="hl-str">"racing"</span>: <span class="hl-str">"balap"</span>,
+    <span class="hl-str">"team"</span>: <span class="hl-str">"tim"</span>, <span class="hl-str">"coach"</span>: <span class="hl-str">"pelatih"</span>, <span class="hl-str">"player"</span>: <span class="hl-str">"pemain"</span>,
+    <span class="hl-str">"match"</span>: <span class="hl-str">"pertandingan"</span>, <span class="hl-str">"winner"</span>: <span class="hl-str">"pemenang"</span>, <span class="hl-str">"season"</span>: <span class="hl-str">"musim"</span>,
+    <span class="hl-str">"training"</span>: <span class="hl-str">"latihan"</span>, <span class="hl-str">"game"</span>: <span class="hl-str">"pertandingan"</span>, <span class="hl-str">"games"</span>: <span class="hl-str">"pertandingan"</span>,
+    <span class="hl-str">"manager"</span>: <span class="hl-str">"manajer"</span>, <span class="hl-str">"champion"</span>: <span class="hl-str">"juara"</span>, <span class="hl-str">"championship"</span>: <span class="hl-str">"kejuaraan"</span>,
+    <span class="hl-str">"league"</span>: <span class="hl-str">"liga"</span>, <span class="hl-str">"score"</span>: <span class="hl-str">"skor"</span>, <span class="hl-str">"goal"</span>: <span class="hl-str">"gol"</span>, <span class="hl-str">"final"</span>: <span class="hl-str">"final"</span>,
+
+    <span class="hl-cmt"># FINANCE</span>
+    <span class="hl-str">"finance"</span>: <span class="hl-str">"keuangan"</span>, <span class="hl-str">"financial"</span>: <span class="hl-str">"keuangan"</span>, <span class="hl-str">"market"</span>: <span class="hl-str">"pasar"</span>,
+    <span class="hl-str">"stock"</span>: <span class="hl-str">"saham"</span>, <span class="hl-str">"stocks"</span>: <span class="hl-str">"saham"</span>, <span class="hl-str">"sale"</span>: <span class="hl-str">"penjualan"</span>,
+    <span class="hl-str">"price"</span>: <span class="hl-str">"harga"</span>, <span class="hl-str">"business"</span>: <span class="hl-str">"bisnis"</span>, <span class="hl-str">"company"</span>: <span class="hl-str">"perusahaan"</span>,
+    <span class="hl-str">"investment"</span>: <span class="hl-str">"investasi"</span>, <span class="hl-str">"investor"</span>: <span class="hl-str">"investor"</span>, <span class="hl-str">"banking"</span>: <span class="hl-str">"perbankan"</span>,
+    <span class="hl-str">"bank"</span>: <span class="hl-str">"bank"</span>, <span class="hl-str">"economy"</span>: <span class="hl-str">"ekonomi"</span>, <span class="hl-str">"economic"</span>: <span class="hl-str">"ekonomi"</span>,
+    <span class="hl-str">"growth"</span>: <span class="hl-str">"pertumbuhan"</span>, <span class="hl-str">"profit"</span>: <span class="hl-str">"keuntungan"</span>, <span class="hl-str">"loss"</span>: <span class="hl-str">"kerugian"</span>,
+    <span class="hl-str">"revenue"</span>: <span class="hl-str">"pendapatan"</span>
+}</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Kamus berhasil dibuat. Total entri tidak baku: 28, total entri asing: 35.</div>
+      </div>
+
+      <h2>6. Fungsi Preprocessing Teks</h2>
+
+      <p>Langkah-langkah dalam fungsi <code>preprocessing()</code>:</p>
+      <ul class="activities">
+        <li><strong>Mengubah Tipe Data:</strong> Memastikan input bertipe string (teks).</li>
+        <li><strong>Case Folding:</strong> Mengubah seluruh teks menjadi huruf kecil.</li>
+        <li><strong>Hapus URL & Email:</strong> Menghilangkan tautan web dan email via regex.</li>
+        <li><strong>Hapus Angka & Simbol:</strong> Membuang karakter angka, tanda baca, serta emotikon.</li>
+        <li><strong>Hapus Spasi Berlebih:</strong> Merapikan spasi ganda.</li>
+        <li><strong>Tokenisasi & Normalisasi:</strong> Memecah kata dan mencocokkan dengan kamus kata tidak baku & kata asing.</li>
+      </ul>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-kw">def</span> <span class="hl-def">preprocessing</span>(text):
+    text = <span class="hl-func">str</span>(text)
+    text = text.<span class="hl-func">lower</span>()
+
+    <span class="hl-cmt"># Hapus URL</span>
+    text = re.<span class="hl-func">sub</span>(r<span class="hl-str">'https?://\S+|www\.\S+'</span>, <span class="hl-str">' '</span>, text)
+
+    <span class="hl-cmt"># Hapus Email</span>
+    text = re.<span class="hl-func">sub</span>(r<span class="hl-str">'\S+@\S+'</span>, <span class="hl-str">' '</span>, text)
+
+    <span class="hl-cmt"># Hapus Angka</span>
+    text = re.<span class="hl-func">sub</span>(r<span class="hl-str">'\d+'</span>, <span class="hl-str">' '</span>, text)
+
+    <span class="hl-cmt"># Hapus Tanda Baca, Simbol, Emoticon</span>
+    text = re.<span class="hl-func">sub</span>(r<span class="hl-str">'[^a-zA-ZÀ-ÿ\s]'</span>, <span class="hl-str">' '</span>, text)
+
+    <span class="hl-cmt"># Hapus Spasi Berlebih</span>
+    text = re.<span class="hl-func">sub</span>(r<span class="hl-str">'\s+'</span>, <span class="hl-str">' '</span>, text).<span class="hl-func">strip</span>()
+
+    <span class="hl-cmt"># Tokenisasi</span>
+    kata = text.<span class="hl-func">split</span>()
+
+    hasil = []
+    <span class="hl-kw">for</span> token <span class="hl-kw">in</span> kata:
+        <span class="hl-cmt"># Normalisasi Baku & Asing</span>
+        <span class="hl-kw">if</span> token <span class="hl-kw">in</span> kamus_tidak_baku:
+            token = kamus_tidak_baku[token]
+        <span class="hl-kw">if</span> token <span class="hl-kw">in</span> kamus_asing:
+            token = kamus_asing[token]
+
+        hasil.<span class="hl-func">append</span>(token)
+
+    <span class="hl-kw">return</span> <span class="hl-str">" "</span>.<span class="hl-func">join</span>(hasil)</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Fungsi preprocessing() berhasil didefinisikan.</div>
+      </div>
+
+      <h2>7. Menerapkan Preprocessing & Menyimpan Data Cleaned</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>df[<span class="hl-str">"berita_clean"</span>] = df[<span class="hl-str">"isi"</span>].<span class="hl-func">apply</span>(preprocessing)
+
+df[[<span class="hl-str">"id"</span>, <span class="hl-str">"isi"</span>, <span class="hl-str">"berita_clean"</span>]].<span class="hl-func">head</span>()
+
+df.<span class="hl-func">to_excel</span>(
+    <span class="hl-str">"detik_200_data_cleaned.xlsx"</span>,
+    index=<span class="hl-kw">False</span>
+)</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>isi</th>
+              <th>berita_clean</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Fitch Ratings Indonesia menurunkan peringkat n...</td>
+              <td>fitch ratings indonesia menurunkan peringkat n...</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>PT Pelabuhan Indonesia (Persero) atau Pelindo ...</td>
+              <td>pt pelabuhan indonesia persero atau pelindo me...</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Direktorat Jenderal Pajak (DJP) Kementerian Ke...</td>
+              <td>direktorat jenderal pajak djp kementerian keua...</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Kejaksaan Agung (Kejagung) menyatakan kesiapan...</td>
+              <td>kejaksaan agung kejagung menyatakan kesiapan m...</td>
+            </tr>
+            <tr>
+              <td>5</th>
+              <td>Pemerintah menindak tegas produsen beras forti...</td>
+              <td>pemerintah menindak tegas produsen beras forti...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="output-log">File 'detik_200_data_cleaned.xlsx' berhasil disimpan.</div>
+      </div>
+
+      <h2>8. Menghitung Jumlah Kata Setelah Preprocessing</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>df[<span class="hl-str">"jumlah_kata_clean"</span>] = df[<span class="hl-str">"berita_clean"</span>].<span class="hl-func">apply</span>(
+    <span class="hl-kw">lambda</span> x: <span class="hl-func">len</span>(x.<span class="hl-func">split</span>())
+)
+
+df[[<span class="hl-str">"id"</span>, <span class="hl-str">"jumlah_kata_asli"</span>, <span class="hl-str">"jumlah_kata_clean"</span>]].<span class="hl-func">head</span>()
+
+<span class="hl-func">print</span>(<span class="hl-str">"Total kata sebelum preprocessing :"</span>, df[<span class="hl-str">"jumlah_kata_asli"</span>].<span class="hl-func">sum</span>())
+<span class="hl-func">print</span>(<span class="hl-str">"Total kata setelah preprocessing :"</span>, df[<span class="hl-str">"jumlah_kata_clean"</span>].<span class="hl-func">sum</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>jumlah_kata_asli</th>
+              <th>jumlah_kata_clean</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>282</td><td>282</td></tr>
+            <tr><td>2</td><td>694</td><td>684</td></tr>
+            <tr><td>3</td><td>358</td><td>349</td></tr>
+            <tr><td>4</td><td>659</td><td>656</td></tr>
+            <tr><td>5</td><td>511</td><td>502</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">Total kata sebelum preprocessing : 65892
+Total kata setelah preprocessing : 64143</div>
+      </div>
+
+      <h2>9. Ekstrak Kata Unik</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>semua_kata = []
+
+<span class="hl-kw">for</span> berita <span class="hl-kw">in</span> df[<span class="hl-str">"berita_clean"</span>]:
+    semua_kata.<span class="hl-func">extend</span>(berita.<span class="hl-func">split</span>())
+
+kata_unik = <span class="hl-func">sorted</span>(<span class="hl-func">set</span>(semua_kata))
+
+<span class="hl-func">print</span>(<span class="hl-str">"Jumlah seluruh kata:"</span>, <span class="hl-func">len</span>(semua_kata))
+<span class="hl-func">print</span>(<span class="hl-str">"Jumlah kata unik:"</span>, <span class="hl-func">len</span>(kata_unik))
+
+df_kata_unik = pd.<span class="hl-func">DataFrame</span>({
+    <span class="hl-str">"kata_unik"</span>: kata_unik
+})
+
+df_kata_unik.<span class="hl-func">head</span>(20)
+
+df_kata_unik.<span class="hl-func">to_excel</span>(
+    <span class="hl-str">"kata_unik.xlsx"</span>,
+    index=<span class="hl-kw">False</span>
+)</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Jumlah seluruh kata: 64143
+Jumlah kata unik: 7133</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>kata_unik</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>1</th><td>a</td></tr>
+            <tr><th>2</th><td>aaa</td></tr>
+            <tr><th>3</th><td>aau</td></tr>
+            <tr><th>4</th><td>abad</td></tr>
+            <tr><th>5</th><td>abadi</td></tr>
+            <tr><th>6</th><td>abal</td></tr>
+            <tr><th>7</th><td>abddullah</td></tr>
+            <tr><th>8</th><td>abddurrahkman</td></tr>
+            <tr><th>9</th><td>abha</td></tr>
+            <tr><th>10</th><td>abraham</td></tr>
+            <tr><th>11</th><td>absen</td></tr>
+            <tr><th>12</th><td>absorber</td></tr>
+            <tr><th>13</th><td>abu</td></tr>
+            <tr><th>14</th><td>academy</td></tr>
+            <tr><th>15</th><td>acara</td></tr>
+            <tr><th>16</th><td>acaranya</td></tr>
+            <tr><th>17</th><td>accelerating</td></tr>
+            <tr><th>18</th><td>acceptance</td></tr>
+            <tr><th>19</th><td>access</td></tr>
+            <tr><th>20</th><td>accessories</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">File 'kata_unik.xlsx' berhasil disimpan.</div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function copyCode(button) {
+      const cell = button.closest('.code-cell');
+      const code = cell.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const originalText = button.innerText;
+        button.innerText = 'copied! ✓';
+        setTimeout(() => {
+          button.innerText = originalText;
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
