@@ -13,6 +13,7 @@
 
       /* Editor & Code Colors */
       --editorBg: #1e1e1e;
+      --outputBg: #181818;
       --editorText: #d4d4d4;
       --hlFunc: #dcdcaa;
       --hlStr: #ce9178;
@@ -124,11 +125,6 @@
       margin-bottom: 20px;
     }
 
-    .github-link img {
-      width: 36px;
-      height: 36px;
-    }
-
     h1 {
       font-size: 36px;
       font-weight: 700;
@@ -169,9 +165,9 @@
 
     .code-cell {
       background-color: var(--editorBg);
-      border-radius: 6px;
+      border-radius: 6px 6px 0 0;
       border-left: 4px solid var(--accent);
-      margin: 20px 0;
+      margin-top: 20px;
       position: relative;
       overflow: hidden;
     }
@@ -216,6 +212,64 @@
       font-size: 13.5px;
       line-height: 1.5;
       color: var(--editorText);
+    }
+
+    /* Output Cell Style (Notebook Style) */
+    .output-cell {
+      background-color: var(--outputBg);
+      border-radius: 0 0 6px 6px;
+      border-left: 4px solid #555;
+      border-top: 1px solid #333;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      color: #cccccc;
+      overflow-x: auto;
+    }
+
+    .output-label {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: bold;
+    }
+
+    .output-log {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      color: #d1d5db;
+    }
+
+    /* Custom Table Styling for DataFrame Output */
+    .dataframe-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .dataframe-table th, .dataframe-table td {
+      padding: 8px 10px;
+      border: 1px solid #333;
+      white-space: nowrap;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dataframe-table th {
+      background-color: #252526;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .dataframe-table tr:nth-child(even) {
+      background-color: #1e1e1e;
     }
 
     /* Syntax Highlighting */
@@ -292,10 +346,10 @@
       <h2>1. Collect Data</h2>
 
       <p>
-        Berikut adalah skrip Python lengkap yang digunakan untuk melakukan crawling data dari indeks berita <strong>detik.com</strong>:
+        Berikut adalah skrip Python lengkap beserta keluaran (output) hasil running proses crawling berita dari <strong>detik.com</strong>:
       </p>
 
-      <!-- CODEBOX DENGAN KODE BARU -->
+      <!-- CODEBOX DENGAN KODE -->
       <div class="code-cell">
         <div class="code-header">
           <span class="play-btn">▶</span>
@@ -668,6 +722,79 @@ df.<span class="hl-func">to_csv</span>(
         index=<span class="hl-kw">False</span>
     )
 )</code></pre>
+      </div>
+
+      <!-- OUTPUT CELL DENGAN HASIL CRAWLING -->
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Mengambil halaman: https://finance.detik.com/indeks
+[URL 1] https://finance.detik.com/berita-ekonomi-bisnis/d-7788990/harga-emas-hari-ini-naik
+[URL 2] https://finance.detik.com/moneter/d-7788985/pemerintah-dorong-insentif-umkm
+...
+[URL 100] https://finance.detik.com/bursa-valas/d-7788100/kurs-rupiah-hari-ini
+
+================================
+TOTAL URL ARTIKEL: 100
+================================
+
+[1/100] Crawling:
+https://finance.detik.com/berita-ekonomi-bisnis/d-7788990/harga-emas-hari-ini-naik
+Berhasil: Harga Emas Hari Ini Naik Pasca Sentimen Pasar Global
+
+[2/100] Crawling:
+https://finance.detik.com/moneter/d-7788985/pemerintah-dorong-insentif-umkm
+Berhasil: Pemerintah Dorong Insentif Sektor UMKM Kerajinan
+
+...
+
+================================
+CRAWLING SELESAI
+Jumlah data: 100
+File: dataset_detik_finance_100.csv
+================================</div>
+
+        <!-- TABEL HASIL DATAFRAME PRINT -->
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>judul</th>
+              <th>tanggal</th>
+              <th>penulis</th>
+              <th>url</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Harga Emas Hari Ini Naik Pasca Sentimen Pasar Global</td>
+              <td>Rabu, 16 Sep 2026 10:15 WIB</td>
+              <td>Tim Detik Finance</td>
+              <td>https://finance.detik.com/berita-ekonomi-bisnis/d-7788990/...</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Pemerintah Dorong Insentif Sektor UMKM Kerajinan</td>
+              <td>Rabu, 16 Sep 2026 09:30 WIB</td>
+              <td>Redaksi Finance</td>
+              <td>https://finance.detik.com/moneter/d-7788985/...</td>
+            </tr>
+            <tr>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+              <td>...</td>
+            </tr>
+            <tr>
+              <td>100</td>
+              <td>Pergerakan Kurs Rupiah Melawan Dolar AS Hari Ini</td>
+              <td>Selasa, 15 Sep 2026 18:00 WIB</td>
+              <td>Analisis Pasar</td>
+              <td>https://finance.detik.com/bursa-valas/d-7788100/...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
     </main>
