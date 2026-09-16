@@ -808,8 +808,8 @@ File: dataset_detik_finance_100.csv
 <span class="hl-kw">import</span> time
 <span class="hl-kw">from</span> urllib.parse <span class="hl-kw">import</span> urljoin
 
-BASE_URL = <span class="hl-str">"https://finance.detik.com"</span>
-INDEX_URL = <span class="hl-str">"https://finance.detik.com/indeks"</span>
+BASE_URL = <span class="hl-str">"https://sport.detik.com"</span>
+INDEX_URL = <span class="hl-str">"https://sport.detik.com/indeks"</span>
 
 HEADERS = {
     <span class="hl-str">"User-Agent"</span>: (
@@ -852,15 +852,15 @@ artikel_set = <span class="hl-func">set</span>()
 
         href = a[<span class="hl-str">"href"</span>]
 
-        <span class="hl-cmt"># Pastikan URL berasal dari finance.detik.com</span>
+        <span class="hl-cmt"># Pastikan URL berasal dari sport.detik.com</span>
         <span class="hl-kw">if</span> href.<span class="hl-func">startswith</span>(<span class="hl-str">"/"</span>):
             href = <span class="hl-func">urljoin</span>(
                 BASE_URL,
                 href
             )
 
-        <span class="hl-cmt"># Hanya artikel finance.detik.com</span>
-        <span class="hl-kw">if</span> <span class="hl-str">"finance.detik.com"</span> <span class="hl-kw">not in</span> href:
+        <span class="hl-cmt"># Hanya artikel sport.detik.com</span>
+        <span class="hl-kw">if</span> <span class="hl-str">"sport.detik.com"</span> <span class="hl-kw">not in</span> href:
             <span class="hl-kw">continue</span>
 
         <span class="hl-cmt"># Artikel biasanya mempunyai /d-</span>
@@ -1139,7 +1139,7 @@ df = df.<span class="hl-func">head</span>(100)
 <span class="hl-cmt"># ==========================================</span>
 
 df.<span class="hl-func">to_csv</span>(
-    <span class="hl-str">"dataset_detik_finance_100.csv"</span>,
+    <span class="hl-str">"dataset_detik_sport_100.csv"</span>,
     index=<span class="hl-kw">False</span>,
     encoding=<span class="hl-str">"utf-8-sig"</span>
 )
@@ -1148,7 +1148,7 @@ df.<span class="hl-func">to_csv</span>(
 <span class="hl-func">print</span>(<span class="hl-str">"\n================================"</span>)
 <span class="hl-func">print</span>(<span class="hl-str">"CRAWLING SELESAI"</span>)
 <span class="hl-func">print</span>(<span class="hl-str">"Jumlah data:"</span>, <span class="hl-func">len</span>(df))
-<span class="hl-func">print</span>(<span class="hl-str">"File: dataset_detik_finance_100.csv"</span>)
+<span class="hl-func">print</span>(<span class="hl-str">"File: dataset_detik_sport_100.csv"</span>)
 <span class="hl-func">print</span>(<span class="hl-str">"================================"</span>)
 
 
