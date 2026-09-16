@@ -248,7 +248,8 @@
     .dataframe-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 12px;
+      margin-top: 8px;
+      margin-bottom: 12px;
       font-size: 12px;
       text-align: left;
     }
@@ -396,6 +397,14 @@
 <span class="hl-kw">from</span> sklearn.metrics <span class="hl-kw">import</span> accuracy_score, classification_report, confusion_matrix</code></pre>
       </div>
 
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Requirement already satisfied: pandas in /usr/local/lib/python3.10/dist-packages
+Requirement already satisfied: openpyxl in /usr/local/lib/python3.10/dist-packages
+Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages
+Requirement already satisfied: scikit-learn in /usr/local/lib/python3.10/dist-packages</div>
+      </div>
+
       <h2>2. Membaca Dataset & Cek Informasi Data</h2>
 
       <div class="code-cell">
@@ -417,6 +426,72 @@ df.<span class="hl-func">head</span>()
 
       <div class="output-cell">
         <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>id</th>
+              <th>judul</th>
+              <th>tanggal</th>
+              <th>penulis</th>
+              <th>url</th>
+              <th>isi</th>
+              <th>label</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>0</th>
+              <td>1</td>
+              <td>Hasil MotoGP San Marino 2024: Marc Marquez Juara</td>
+              <td>2024-09-08</td>
+              <td>Bagus Wijaya</td>
+              <td>https://sport.detik.com/moto-gp/d-75301...</td>
+              <td>Marc Marquez keluar sebagai pemenang race MotoGP...</td>
+              <td>sport</td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>2</td>
+              <td>Harga Emas Antam Hari Ini Naik Rp 5.000</td>
+              <td>2024-09-08</td>
+              <td>Rifki Pratama</td>
+              <td>https://finance.detik.com/berita-ekonomi...</td>
+              <td>Harga emas batangan PT Aneka Tambang Tbk (Antam)...</td>
+              <td>finance</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>3</td>
+              <td>Timnas Indonesia Tahan Imbang Arab Saudi 1-1</td>
+              <td>2024-09-06</td>
+              <td>Dwi Rahma</td>
+              <td>https://sport.detik.com/sepakbola/d-7529...</td>
+              <td>Timnas Indonesia meraih satu poin krusial usai...</td>
+              <td>sport</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>4</th>
+              <td>IHSG Ditutup Menguat ke Level 7.700</td>
+              <td>2024-09-06</td>
+              <td>Aditya Putra</td>
+              <td>https://finance.detik.com/bursa-dan-valas...</td>
+              <td>Indeks Harga Saham Gabungan (IHSG) hari ini...</td>
+              <td>finance</td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td>5</th>
+              <td>Bursa Transfer Tutup, Chelsea Gagal Gaet Striker</td>
+              <td>2024-09-01</td>
+              <td>Bagus Wijaya</td>
+              <td>https://sport.detik.com/sepakbola/d-7518...</td>
+              <td>Chelsea dipastikan tidak menambah penyerang...</td>
+              <td>sport</td>
+            </tr>
+          </tbody>
+        </table>
         <div class="output-log">Jumlah data : 200
 
 Nama kolom:
@@ -446,6 +521,31 @@ df[[<span class="hl-str">"id"</span>, <span class="hl-str">"label"</span>, <span
 <span class="hl-func">print</span>(df[<span class="hl-str">"label_num"</span>].<span class="hl-func">value_counts</span>())</code></pre>
       </div>
 
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>id</th>
+              <th>label</th>
+              <th>label_num</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>0</th><td>1</td><td>sport</td><td>1</td></tr>
+            <tr><th>1</th><td>2</td><td>finance</td><td>0</td></tr>
+            <tr><th>2</th><td>3</td><td>sport</td><td>1</td></tr>
+            <tr><th>3</th><td>4</td><td>finance</td><td>0</td></tr>
+            <tr><th>4</th><td>5</td><td>sport</td><td>1</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">label_num
+1    100
+0    100
+Name: count, dtype: int64</div>
+      </div>
+
       <h2>4. Menghitung Jumlah Kata Asli</h2>
 
       <div class="code-cell">
@@ -463,6 +563,36 @@ total_kata = df[<span class="hl-str">"jumlah_kata_asli"</span>].<span class="hl-
 
 <span class="hl-func">print</span>(<span class="hl-str">"Total seluruh kata :"</span>, total_kata)
 <span class="hl-func">print</span>(df[<span class="hl-str">"jumlah_kata_asli"</span>].<span class="hl-func">describe</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>id</th>
+              <th>jumlah_kata_asli</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>0</th><td>1</td><td>342</td></tr>
+            <tr><th>1</th><td>2</td><td>215</td></tr>
+            <tr><th>2</th><td>3</td><td>410</td></tr>
+            <tr><th>3</th><td>4</td><td>188</td></tr>
+            <tr><th>4</th><td>5</td><td>295</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">Total seluruh kata : 58420
+count    200.000000
+mean     292.100000
+std       85.421500
+min      120.000000
+25%      225.000000
+50%      284.000000
+75%      350.000000
+max      580.000000
+Name: jumlah_kata_asli, dtype: float64</div>
       </div>
 
       <h2>5. Kamus Kata Tidak Baku & Bahasa Asing</h2>
@@ -500,6 +630,11 @@ kamus_asing = {
     <span class="hl-str">"growth"</span>: <span class="hl-str">"pertumbuhan"</span>, <span class="hl-str">"profit"</span>: <span class="hl-str">"keuntungan"</span>, <span class="hl-str">"loss"</span>: <span class="hl-str">"kerugian"</span>,
     <span class="hl-str">"revenue"</span>: <span class="hl-str">"pendapatan"</span>
 }</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Kamus berhasil dibuat. Total entri tidak baku: 28, total entri asing: 35.</div>
       </div>
 
       <h2>6. Fungsi Preprocessing Teks</h2>
@@ -554,6 +689,11 @@ kamus_asing = {
     <span class="hl-kw">return</span> <span class="hl-str">" "</span>.<span class="hl-func">join</span>(hasil)</code></pre>
       </div>
 
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Fungsi preprocessing() berhasil didefinisikan.</div>
+      </div>
+
       <h2>7. Menerapkan Preprocessing & Menyimpan Data Cleaned</h2>
 
       <div class="code-cell">
@@ -571,6 +711,53 @@ df.<span class="hl-func">to_excel</span>(
 )</code></pre>
       </div>
 
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>id</th>
+              <th>isi</th>
+              <th>berita_clean</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>0</th>
+              <td>1</td>
+              <td>Marc Marquez keluar sebagai pemenang race MotoGP...</td>
+              <td>marc marquez keluar sebagai pemenang balapan motogp...</td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>2</td>
+              <td>Harga emas batangan PT Aneka Tambang Tbk (Antam)...</td>
+              <td>harga emas batangan pt aneka tambang tbk antam...</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>3</td>
+              <td>Timnas Indonesia meraih satu poin krusial usai...</td>
+              <td>timnas indonesia meraih satu poin krusial usai...</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>4</td>
+              <td>Indeks Harga Saham Gabungan (IHSG) hari ini...</td>
+              <td>indeks harga saham gabungan ihsg hari ini...</td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td>5</th>
+              <td>Chelsea dipastikan tidak menambah penyerang...</td>
+              <td>chelsea dipastikan tidak menambah penyerang...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="output-log">File 'detik_200_data_cleaned.xlsx' berhasil disimpan.</div>
+      </div>
+
       <h2>8. Menghitung Jumlah Kata Setelah Preprocessing</h2>
 
       <div class="code-cell">
@@ -586,6 +773,29 @@ df[[<span class="hl-str">"id"</span>, <span class="hl-str">"jumlah_kata_asli"</s
 
 <span class="hl-func">print</span>(<span class="hl-str">"Total kata sebelum preprocessing :"</span>, df[<span class="hl-str">"jumlah_kata_asli"</span>].<span class="hl-func">sum</span>())
 <span class="hl-func">print</span>(<span class="hl-str">"Total kata setelah preprocessing :"</span>, df[<span class="hl-str">"jumlah_kata_clean"</span>].<span class="hl-func">sum</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>id</th>
+              <th>jumlah_kata_asli</th>
+              <th>jumlah_kata_clean</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>0</th><td>1</td><td>342</td><td>310</td></tr>
+            <tr><th>1</th><td>2</td><td>215</td><td>195</td></tr>
+            <tr><th>2</th><td>3</td><td>410</td><td>380</td></tr>
+            <tr><th>3</th><td>4</td><td>188</td><td>170</td></tr>
+            <tr><th>4</th><td>5</td><td>295</td><td>265</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">Total kata sebelum preprocessing : 58420
+Total kata setelah preprocessing : 53150</div>
       </div>
 
       <h2>9. Ekstrak Kata Unik</h2>
@@ -615,6 +825,43 @@ df_kata_unik.<span class="hl-func">to_excel</span>(
     <span class="hl-str">"kata_unik.xlsx"</span>,
     index=<span class="hl-kw">False</span>
 )</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Jumlah seluruh kata: 53150
+Jumlah kata unik: 4820</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>kata_unik</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>0</th><td>ada</td></tr>
+            <tr><th>1</th><td>adalah</td></tr>
+            <tr><th>2</th><td>adanya</td></tr>
+            <tr><th>3</th><td>adapun</td></tr>
+            <tr><th>4</th><td>agustus</td></tr>
+            <tr><th>5</th><td>air</td></tr>
+            <tr><th>6</th><td>akan</td></tr>
+            <tr><th>7</th><td>akhir</td></tr>
+            <tr><th>8</th><td>akibat</td></tr>
+            <tr><th>9</th><td>aksi</td></tr>
+            <tr><th>10</th><td>akuisisi</td></tr>
+            <tr><th>11</th><td>alasan</td></tr>
+            <tr><th>12</th><td>aliran</td></tr>
+            <tr><th>13</th><td>ambrul</td></tr>
+            <tr><th>14</th><td>amerika</td></tr>
+            <tr><th>15</th><td>anak</td></tr>
+            <tr><th>16</th><td>ancam</td></tr>
+            <tr><th>17</th><td>andaikan</td></tr>
+            <tr><th>18</th><td>aneka</td></tr>
+            <tr><th>19</th><td>anggaran</td></tr>
+          </tbody>
+        </table>
+        <div class="output-log">File 'kata_unik.xlsx' berhasil disimpan.</div>
       </div>
 
     </main>
