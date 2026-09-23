@@ -398,6 +398,27 @@
       </p>
        <img src="split.png"><img src="hasilsplit.png">
 
+      <h3>1. Import file csv</h3>
+      <p>
+        <strong>1. Skenario Pengujian (Testing Pipeline — Jalur Atas)</strong><br>
+        <strong>Model Learning:</strong> Subset Data Sample dikirim ke kNN Testing dan Naive Bayes Testing untuk melatih model (Learner). <br>
+        <strong>Evaluasi Data Uji:</strong>
+        <ul>
+          <li>Kedua model (Learner) dikirim ke Test and Score Testing.</li>
+          <li>Data pengujian berasal langsung dari alur Data Sample --> Data.</li>  
+          <li>Widget ini mengevaluasi seberapa baik model yang dilatih pada Data Sample ketika diprediksi kembali terhadap data tersebut.</li>
+        </ul>
+        <strong>2. Skenario Pelatihan/Validasi (Training Pipeline — Jalur Bawah)</strong><br>
+        <strong>Model Learning:</strong> Subset Remaining Data dikirim ke kNN Training dan Naive Bayes Training untuk melatih model terpisah (Learner).  
+        </strong>Evaluasi Data Sisa:</strong>
+        <ul>
+          <li>Kedua model (Learner) dikirim ke Test and Score Training.</li>
+          <li>Data pengujian berasal dari alur Remaining Data --> Data.</li>
+          <li>Widget ini mengevaluasi kinerja model yang dilatih dari data sisa terhadap data sisa itu sendiri.</li>
+        </ul>
+      </p>
+       <img src="model.png">
+
       
     </main>
   </div>
