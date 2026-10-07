@@ -211,8 +211,6 @@ if st.session_state.classified:
         # Vektorisasi & Prediksi Naive Bayes
         nb_pred = nb_model.predict(X_pred)[0].upper()
         nb_probs = nb_model.predict_proba(X_pred)[0]
-        
-        classes = svm_model.classes_
 
     # Tampilkan Hasil Perbandingan Prediksi Utama
     res_col2 = st.columns(1)
