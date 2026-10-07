@@ -211,7 +211,7 @@ if st.session_state.classified:
     content_tab1, content_tab2, content_tab3 = st.tabs([
         f"Isi Konten Terekstraksi ({len(content_val.split())} kata)", 
         "Hasil Preprocessing", 
-        "Detail Skip-Gram Embedding"
+        "Hasil Word Embeded menggunakan Skip-Gram Embedding"
     ])
     
     with content_tab1:
