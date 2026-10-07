@@ -209,13 +209,13 @@ if st.session_state.classified:
     # Tab Konten & Hasil Preprocessing Per Poin
     st.markdown("---")
     content_tab1, content_tab2, content_tab3 = st.tabs([
-        f"Isi Konten Terekstraksi ({len(content_val.split())} kata)", 
+        f"Hasil Isi Artikel ({len(content_val.split())} kata)", 
         "Hasil Preprocessing", 
         "Hasil Word Embeded menggunakan Skip-Gram Embedding"
     ])
     
     with content_tab1:
-        st.text_area("Konten artikel bersih:", content_val, height=200)
+        st.text_area("Isi Artikel", content_val, height=200)
         
     with content_tab2:
         prep_res = text_preprocessing(content_val)
