@@ -152,11 +152,6 @@ def load_and_train_models():
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Model SVM
-    svm_model = SVC(kernel='linear', probability=True)
-    svm_model.fit(X_train, y_train)
-    svm_acc = accuracy_score(y_test, svm_model.predict(X_test))
-    
     # Model Naive Bayes
     nb_model = MultinomialNB()
     nb_model.fit(X_train, y_train)
@@ -212,12 +207,7 @@ if st.session_state.classified:
             title_val = "Input Teks Langsung / Manual"
             content_val = st.session_state.input_text
             target_url = "Input Manual"
-
-        # Vektorisasi & Prediksi SVM
-        X_pred = vectorizer.transform([content_val])
-        svm_pred = svm_model.predict(X_pred)[0].upper()
-        svm_probs = svm_model.predict_proba(X_pred)[0]
-
+            
         # Vektorisasi & Prediksi Naive Bayes
         nb_pred = nb_model.predict(X_pred)[0].upper()
         nb_probs = nb_model.predict_proba(X_pred)[0]
