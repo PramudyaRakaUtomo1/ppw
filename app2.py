@@ -10,6 +10,32 @@ from sklearn.svm import SVC
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 import re
+# Styling CSS Tambahan
+st.markdown("""
+    <style>
+    .main-header {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1E3A8A;
+        margin-bottom: 0px;
+    }
+    .sub-header {
+        font-size: 0.95rem;
+        color: #4B5563;
+        margin-bottom: 20px;
+    }
+    .preprocessing-box {
+        background-color: #1E293B; /* Warna latar gelap agar selaras dengan dark mode */
+        color: #F8FAFC;            /* Warna teks putih terang */
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #334155;
+        margin-bottom: 8px;
+        font-family: monospace;
+        font-size: 0.9rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # Konfigurasi Halaman Streamlit
 st.set_page_config(
