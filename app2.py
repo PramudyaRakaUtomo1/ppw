@@ -6,10 +6,17 @@ import requests
 from bs4 import BeautifulSoup
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.svm import SVC
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 import re
+
+# Konfigurasi Halaman Streamlit
+st.set_page_config(
+    page_title="Klasifikasi Berita Naive Bayes Detik.com",
+    page_icon="📰",
+    layout="wide"
+)
+
 # Styling CSS Tambahan
 st.markdown("""
     <style>
@@ -37,41 +44,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Konfigurasi Halaman Streamlit
-st.set_page_config(
-    page_title="Klasifikasi Berita SVM & Naive Bayes Detik.com",
-    page_icon="📰",
-    layout="wide"
-)
-
-# Styling CSS Tambahan
-st.markdown("""
-    <style>
-    .main-header {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #1E3A8A;
-        margin-bottom: 0px;
-    }
-    .sub-header {
-        font-size: 0.95rem;
-        color: #4B5563;
-        margin-bottom: 20px;
-    }
-    .preprocessing-box {
-        background-color: #F8FAFC;
-        padding: 12px;
-        border-radius: 6px;
-        border: 1px solid #E2E8F0;
-        margin-bottom: 8px;
-        font-family: monospace;
-        font-size: 0.9rem;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-st.markdown('<p class="main-header">Sistem Klasifikasi & Ekstraksi Berita (SVM vs Naive Bayes)</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Dilengkapi Web Scraping Detik.com, Preprocessing Text Mining Per-Poin, dan Perbandingan Model Machine Learning.</p>', unsafe_allow_html=True)
+st.markdown('<p class="main-header">Sistem Klasifikasi & Ekstraksi Berita (Naive Bayes)</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">Dilengkapi Web Scraping Detik.com, Preprocessing Text Mining Per-Poin, dan Klasifikasi Menggunakan Algoritma Naive Bayes.</p>', unsafe_allow_html=True)
 
 # Fungsi Scraping Konten dari URL Detik.com
 def scrape_detik_article(url):
@@ -144,7 +118,7 @@ def load_and_train_models():
     try:
         df = pd.read_csv('dataset_detik_gabungan_200.csv')
     except Exception as e:
-        return None, None, None, None, f"Gagal membaca dataset: {e}"
+        return None, None, None, f"Gagal membaca dataset: {e}"
     
     vectorizer = TfidfVectorizer(max_features=1000, stop_words='english')
     X = vectorizer.fit_transform(df['isi'].fillna(''))
@@ -209,22 +183,21 @@ if st.session_state.classified:
             target_url = "Input Manual"
             
         # Vektorisasi & Prediksi Naive Bayes
-        nb_pred = nb_model.predict(X_pred)[0].upper()
+        X_pred = vectorizer.transform([content_val])
+        nb_pred = str(nb_model.predict(X_pred)[0]).upper()
         nb_probs = nb_model.predict_proba(X_pred)[0]
+        classes = [str(c).upper() for c in nb_model.classes_]
 
-    # Tampilkan Hasil Perbandingan Prediksi Utama
-    res_col2 = st.columns(1)
-    
-    with res_col2:
-        st.markdown("### 📊 Prediksi Naive Bayes (MultinomialNB)")
-        st.success(f"**Kategori:** {nb_pred}")
-        st.write("Distribusi Keyakinan:")
-        for idx, cls in enumerate(classes):
-            st.write(f"- {cls.capitalize()}: {nb_probs[idx]*100:.2f}%")
-            st.progress(float(nb_probs[idx]))
+    # Tampilkan Hasil Prediksi Utama
+    st.markdown("### 📊 Hasil Prediksi Naive Bayes (MultinomialNB)")
+    st.success(f"**Kategori:** {nb_pred}")
+    st.write("Distribusi Keyakinan:")
+    for idx, cls in enumerate(classes):
+        st.write(f"- {cls.capitalize()}: {nb_probs[idx]*100:.2f}%")
+        st.progress(float(nb_probs[idx]))
 
     # Validasi Domain (Diluar Finance / Sport)
-    max_prob = max(max(svm_probs), max(nb_probs))
+    max_prob = max(nb_probs)
     if max_prob < 0.45:
         st.error("⚠️ **Peringatan:** Artikel ini terdeteksi berada di **luar kategori Sport maupun Finance** (tingkat keyakinan model rendah).")
 
@@ -248,10 +221,10 @@ if st.session_state.classified:
         prep_res = text_preprocessing(content_val)
         
         st.markdown("**1. Case Folding (Pengubahan Huruf Kecil):**")
-        st.markdown(f'<div style="background-color: #1E293B; color: #F8FAFC; padding: 12px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 8px; font-family: monospace; font-size: 0.9rem;">{prep_res["case_folding"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="preprocessing-box">{prep_res["case_folding"]}</div>', unsafe_allow_html=True)
         
         st.markdown("**2. Cleaning (Pembersihan Angka, Simbol, & Tanda Baca):**")
-        st.markdown(f'<div style="background-color: #1E293B; color: #F8FAFC; padding: 12px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 8px; font-family: monospace; font-size: 0.9rem;">{prep_res["cleaning"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="preprocessing-box">{prep_res["cleaning"]}</div>', unsafe_allow_html=True)
         
         st.markdown("**3. Tokenization (Pemecahan Kata / Token):**")
         st.code(str(prep_res["tokenization"]), language="python")
