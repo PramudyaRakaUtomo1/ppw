@@ -266,11 +266,12 @@ if st.session_state.classified:
         
     with content_tab2:
         prep_res = text_preprocessing(content_val)
+        
         st.markdown("**1. Case Folding (Pengubahan Huruf Kecil):**")
-        st.markdown(f'<div class="preprocessing-box">{prep_res["case_folding"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="background-color: #1E293B; color: #F8FAFC; padding: 12px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 8px; font-family: monospace; font-size: 0.9rem;">{prep_res["case_folding"]}</div>', unsafe_allow_html=True)
         
         st.markdown("**2. Cleaning (Pembersihan Angka, Simbol, & Tanda Baca):**")
-        st.markdown(f'<div class="preprocessing-box">{prep_res["cleaning"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="background-color: #1E293B; color: #F8FAFC; padding: 12px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 8px; font-family: monospace; font-size: 0.9rem;">{prep_res["cleaning"]}</div>', unsafe_allow_html=True)
         
         st.markdown("**3. Tokenization (Pemecahan Kata / Token):**")
         st.code(str(prep_res["tokenization"]), language="python")
