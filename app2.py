@@ -217,14 +217,6 @@ if st.session_state.classified:
     # Tampilkan Hasil Perbandingan Prediksi Utama
     res_col1, res_col2 = st.columns(2)
     
-    with res_col1:
-        st.markdown("### 🤖 Prediksi Support Vector Machine (SVM)")
-        st.info(f"**Kategori:** {svm_pred}")
-        st.write("Distribusi Keyakinan:")
-        for idx, cls in enumerate(classes):
-            st.write(f"- {cls.capitalize()}: {svm_probs[idx]*100:.2f}%")
-            st.progress(float(svm_probs[idx]))
-
     with res_col2:
         st.markdown("### 📊 Prediksi Naive Bayes (MultinomialNB)")
         st.success(f"**Kategori:** {nb_pred}")
