@@ -215,7 +215,7 @@ if st.session_state.classified:
         classes = svm_model.classes_
 
     # Tampilkan Hasil Perbandingan Prediksi Utama
-    res_col1, res_col2 = st.columns(2)
+    res_col2 = st.columns(1)
     
     with res_col2:
         st.markdown("### 📊 Prediksi Naive Bayes (MultinomialNB)")
