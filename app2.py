@@ -157,9 +157,9 @@ def load_and_train_models():
     nb_model.fit(X_train, y_train)
     nb_acc = accuracy_score(y_test, nb_model.predict(X_test))
     
-    return df, vectorizer, svm_model, nb_model, f"SVM Acc: {svm_acc*100:.2f}% | NB Acc: {nb_acc*100:.2f}%"
+    return df, vectorizer, nb_model, f"NB Acc: {nb_acc*100:.2f}%"
 
-df_data, vectorizer, svm_model, nb_model, model_status = load_and_train_models()
+df_data, vectorizer, nb_model, model_status = load_and_train_models()
 
 if "Gagal" in model_status:
     st.error(model_status)
