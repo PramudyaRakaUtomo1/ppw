@@ -256,8 +256,8 @@ if st.session_state.classified:
     # Tab Konten & Hasil Preprocessing Per Poin
     st.markdown("---")
     content_tab1, content_tab2, content_tab3 = st.tabs([
-        f"Konten Terekstraksi ({len(content_val.split())} kata)", 
-        "Hasil Preprocessing Sastrawi (Per Poin)", 
+        f"Isi Konten Terekstraksi ({len(content_val.split())} kata)", 
+        "Hasil Preprocessing", 
         "Detail Skip-Gram Embedding"
     ])
     
