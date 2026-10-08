@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 import re
+from datetime import datetime
 
 # Konfigurasi Halaman Streamlit
 st.set_page_config(
@@ -32,8 +33,8 @@ st.markdown("""
         margin-bottom: 20px;
     }
     .preprocessing-box {
-        background-color: #1E293B; /* Warna latar gelap agar selaras dengan dark mode */
-        color: #F8FAFC;            /* Warna teks putih terang */
+        background-color: #1E293B;
+        color: #F8FAFC;
         padding: 12px;
         border-radius: 6px;
         border: 1px solid #334155;
@@ -46,6 +47,10 @@ st.markdown("""
 
 st.markdown('<p class="main-header">Sistem Klasifikasi & Ekstraksi Berita (Support Vector Machine)</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">Dilengkapi Web Scraping Detik.com, Preprocessing Text Mining Per-Poin, dan Klasifikasi Menggunakan Algoritma SVM.</p>', unsafe_allow_html=True)
+
+# Inisialisasi Session State untuk Riwayat Penyimpanan
+if 'history' not in st.session_state:
+    st.session_state.history = []
 
 # Fungsi Scraping Konten dari URL Detik.com
 def scrape_detik_article(url):
@@ -72,19 +77,13 @@ def scrape_detik_article(url):
     except Exception as e:
         return None, None, str(e)
 
-# Fungsi Preprocessing Teks Sederhana (Simulasi Sastrawi & Text Mining)
+# Fungsi Preprocessing Teks Sederhana
 def text_preprocessing(text):
-    # 1. Case Folding
     case_folded = text.lower()
-    
-    # 2. Cleaning (Hapus angka, tanda baca, simbol)
     cleaned = re.sub(r'[^a-z\s]', '', case_folded)
     cleaned = re.sub(r'\s+', ' ', cleaned).strip()
-    
-    # 3. Tokenization
     tokens = cleaned.split()
     
-    # 4. Stopword Removal (Daftar stopword umum Bahasa Indonesia)
     stopwords_id = {
         'yang', 'untuk', 'dan', 'di', 'pada', 'ke', 'para', 'namun', 'menurut', 
         'antara', 'dia', 'dua', 'ia', 'seperti', 'jika', 'sehingga', 'kembali', 
@@ -93,7 +92,6 @@ def text_preprocessing(text):
     }
     filtered_tokens = [w for w in tokens if w not in stopwords_id]
     
-    # 5. Stemming Sederhana (Contoh pemotongan akhiran umum -i, -kan, -an)
     stemmed_tokens = []
     for w in filtered_tokens:
         if w.endswith('kan'):
@@ -126,7 +124,6 @@ def load_and_train_models():
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Menggunakan Model Support Vector Machine (SVM) dengan probability=True
     svm_model = SVC(kernel='linear', probability=True, random_state=42)
     svm_model.fit(X_train, y_train)
     svm_acc = accuracy_score(y_test, svm_model.predict(X_test))
@@ -147,7 +144,7 @@ if 'classified' not in st.session_state:
     st.session_state.classified = False
 
 st.markdown("---")
-tab1, tab2 = st.tabs(["🔗 Ekstraksi Tautan (URL Detik.com)", "📝 Input Teks Langsung"])
+tab1, tab2, tab3 = st.tabs(["🔗 Ekstraksi Tautan (URL Detik.com)", "📝 Input Teks Langsung", "📂 Riwayat & Unduh Hasil"])
 
 with tab1:
     url_input = st.text_input("Masukkan URL Berita Detik.com:", value="https://finance.detik.com/berita-ekonomi-bisnis/d-8696923/shopee-hadirkan-2-inovasi-baru-bantu-umkm-atur-harga-hingga-jualan-live")
@@ -162,6 +159,27 @@ with tab2:
         st.session_state.classified = True
         st.session_state.input_text = manual_text
         st.session_state.mode = "text"
+
+with tab3:
+    st.markdown("### 📂 Riwayat Hasil Klasifikasi")
+    if len(st.session_state.history) > 0:
+        df_history = pd.DataFrame(st.session_state.history)
+        st.dataframe(df_history, use_container_width=True)
+        
+        # Tombol Download CSV
+        csv_data = df_history.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Unduh Riwayat sebagai CSV",
+            data=csv_data,
+            file_name=f"riwayat_klasifikasi_svm_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv",
+        )
+        
+        if st.button("🗑️ Hapus Riwayat"):
+            st.session_state.history = []
+            st.rerun()
+    else:
+        st.info("Belum ada riwayat hasil klasifikasi yang tersimpan.")
 
 # Proses Hasil Prediksi
 if st.session_state.classified:
@@ -188,6 +206,19 @@ if st.session_state.classified:
         svm_probs = svm_model.predict_proba(X_pred)[0]
         classes = [str(c).upper() for c in svm_model.classes_]
 
+    # Simpan otomatis ke riwayat jika belum tersimpan di aksi saat ini
+    current_result = {
+        "Waktu": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "Judul": title_val,
+        "Sumber/URL": target_url,
+        "Prediksi Kategori": svm_pred,
+        "Keyakinan (%)": f"{max(svm_probs)*100:.2f}%"
+    }
+    
+    # Cek agar tidak duplikat ganda beruntun jika rerun
+    if not st.session_state.history or st.session_state.history[-1]["Judul"] != title_val:
+        st.session_state.history.append(current_result)
+
     # Tampilkan Hasil Prediksi Utama
     st.markdown("### 📊 Hasil Prediksi Support Vector Machine (SVM)")
     st.success(f"**Kategori:** {svm_pred}")
@@ -196,7 +227,6 @@ if st.session_state.classified:
         st.write(f"- {cls.capitalize()}: {svm_probs[idx]*100:.2f}%")
         st.progress(float(svm_probs[idx]))
 
-    # Validasi Domain (Diluar Finance / Sport)
     max_prob = max(svm_probs)
     if max_prob < 0.45:
         st.error("⚠️ **Peringatan:** Artikel ini terdeteksi berada di **luar kategori Sport maupun Finance** (tingkat keyakinan model rendah).")
