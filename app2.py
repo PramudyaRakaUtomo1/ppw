@@ -126,7 +126,7 @@ def load_and_train_models():
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Menggunakan Model Support Vector Machine (SVC) dengan probability=True
+    # Menggunakan Model Support Vector Machine (SVM) dengan probability=True
     svm_model = SVC(kernel='linear', probability=True, random_state=42)
     svm_model.fit(X_train, y_train)
     svm_acc = accuracy_score(y_test, svm_model.predict(X_test))
@@ -206,7 +206,7 @@ if st.session_state.classified:
     st.markdown(f"**JUDUL BERITA:** {title_val}")
     st.markdown(f"**SUMBER:** {target_url}")
 
-    # Tab Konten & Hasil Preprocessing Per Poin
+    # Tab Konten & Hasil Preprocessing
     st.markdown("---")
     content_tab1, content_tab2, content_tab3 = st.tabs([
         f"Hasil Isi Artikel ({len(content_val.split())} kata)", 
