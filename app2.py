@@ -189,7 +189,7 @@ if st.session_state.classified:
         classes = [str(c).upper() for c in svm_model.classes_]
 
     # Tampilkan Hasil Prediksi Utama
-    st.markdown("### 📊 Hasil Prediksi Support Vector Machine (SVC)")
+    st.markdown("### 📊 Hasil Prediksi Support Vector Machine (SVM)")
     st.success(f"**Kategori:** {svm_pred}")
     st.write("Distribusi Keyakinan (Probability):")
     for idx, cls in enumerate(classes):
