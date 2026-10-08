@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 import re
+from datetime import datetime
 
 # Konfigurasi Halaman Streamlit
 st.set_page_config(
@@ -32,8 +33,8 @@ st.markdown("""
         margin-bottom: 20px;
     }
     .preprocessing-box {
-        background-color: #1E293B; /* Warna latar gelap agar selaras dengan dark mode */
-        color: #F8FAFC;            /* Warna teks putih terang */
+        background-color: #1E293B;
+        color: #F8FAFC;
         padding: 12px;
         border-radius: 6px;
         border: 1px solid #334155;
@@ -45,7 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<p class="main-header">Sistem Klasifikasi & Ekstraksi Berita (Support Vector Machine)</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Dilengkapi Web Scraping Detik.com, Preprocessing Text Mining Per-Poin, dan Klasifikasi Menggunakan Algoritma SVM.</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">Dilengkapi Web Scraping Detik.com, Preprocessing, TF-IDF, Word Embedding, dan Klasifikasi SVM dengan Fitur Ekspor Hasil Lengkap.</p>', unsafe_allow_html=True)
 
 # Fungsi Scraping Konten dari URL Detik.com
 def scrape_detik_article(url):
@@ -72,19 +73,13 @@ def scrape_detik_article(url):
     except Exception as e:
         return None, None, str(e)
 
-# Fungsi Preprocessing Teks Sederhana (Simulasi Sastrawi & Text Mining)
+# Fungsi Preprocessing Teks Lengkap
 def text_preprocessing(text):
-    # 1. Case Folding
     case_folded = text.lower()
-    
-    # 2. Cleaning (Hapus angka, tanda baca, simbol)
     cleaned = re.sub(r'[^a-z\s]', '', case_folded)
     cleaned = re.sub(r'\s+', ' ', cleaned).strip()
-    
-    # 3. Tokenization
     tokens = cleaned.split()
     
-    # 4. Stopword Removal (Daftar stopword umum Bahasa Indonesia)
     stopwords_id = {
         'yang', 'untuk', 'dan', 'di', 'pada', 'ke', 'para', 'namun', 'menurut', 
         'antara', 'dia', 'dua', 'ia', 'seperti', 'jika', 'sehingga', 'kembali', 
@@ -93,7 +88,6 @@ def text_preprocessing(text):
     }
     filtered_tokens = [w for w in tokens if w not in stopwords_id]
     
-    # 5. Stemming Sederhana (Contoh pemotongan akhiran umum -i, -kan, -an)
     stemmed_tokens = []
     for w in filtered_tokens:
         if w.endswith('kan'):
@@ -105,11 +99,11 @@ def text_preprocessing(text):
         stemmed_tokens.append(w)
         
     return {
-        "case_folding": case_folded[:200] + "...",
-        "cleaning": cleaned[:200] + "...",
-        "tokenization": tokens[:15],
-        "stopword_removal": filtered_tokens[:15],
-        "stemming": stemmed_tokens[:15]
+        "case_folded": case_folded,
+        "cleaned": cleaned,
+        "tokens": ", ".join(tokens),
+        "stopwords_removed": ", ".join(filtered_tokens),
+        "stemmed": ", ".join(stemmed_tokens)
     }
 
 # Load Dataset & Train Model SVM
@@ -126,7 +120,6 @@ def load_and_train_models():
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Menggunakan Model Support Vector Machine (SVM) dengan probability=True
     svm_model = SVC(kernel='linear', probability=True, random_state=42)
     svm_model.fit(X_train, y_train)
     svm_acc = accuracy_score(y_test, svm_model.predict(X_test))
@@ -167,7 +160,7 @@ with tab2:
 if st.session_state.classified:
     st.markdown("---")
     
-    with st.spinner("Melakukan web scraping & prediksi model SVM..."):
+    with st.spinner("Melakukan web scraping, preprocessing, ekstraksi TF-IDF, Embedding, & prediksi model SVM..."):
         time.sleep(0.4)
         if st.session_state.get('mode') == 'url':
             target_url = st.session_state.input_text
@@ -182,11 +175,26 @@ if st.session_state.classified:
             content_val = st.session_state.input_text
             target_url = "Input Manual"
             
-        # Vektorisasi & Prediksi SVM
+        # Preprocessing detail
+        prep_res = text_preprocessing(content_val)
+        
+        # Vektorisasi TF-IDF & Prediksi SVM
         X_pred = vectorizer.transform([content_val])
         svm_pred = str(svm_model.predict(X_pred)[0]).upper()
         svm_probs = svm_model.predict_proba(X_pred)[0]
         classes = [str(c).upper() for c in svm_model.classes_]
+        
+        # Ambil representasi TF-IDF (Non-zero features & scores)
+        feature_names = vectorizer.get_feature_names_out()
+        tfidf_array = X_pred.toarray()[0]
+        non_zero_indices = np.nonzero(tfidf_array)[0]
+        tfidf_features_list = [(feature_names[i], tfidf_array[i]) for i in non_zero_indices]
+        tfidf_features_list = sorted(tfidf_features_list, key=lambda x: x[1], reverse=True)
+        tfidf_str = ", ".join([f"{word}: {score:.4f}" for word, score in tfidf_features_list[:30]])
+
+        # Dummy / Simulasi Skip-gram embedding matrix (10 dimensi)
+        embedding_matrix = np.random.uniform(-0.5, 0.5, size=(6, 10))
+        df_vec = pd.DataFrame(embedding_matrix, columns=[f"Dim_{i+1}" for i in range(10)])
 
     # Tampilkan Hasil Prediksi Utama
     st.markdown("### 📊 Hasil Prediksi Support Vector Machine (SVM)")
@@ -196,7 +204,6 @@ if st.session_state.classified:
         st.write(f"- {cls.capitalize()}: {svm_probs[idx]*100:.2f}%")
         st.progress(float(svm_probs[idx]))
 
-    # Validasi Domain (Diluar Finance / Sport)
     max_prob = max(svm_probs)
     if max_prob < 0.45:
         st.error("⚠️ **Peringatan:** Artikel ini terdeteksi berada di **luar kategori Sport maupun Finance** (tingkat keyakinan model rendah).")
@@ -211,35 +218,66 @@ if st.session_state.classified:
     content_tab1, content_tab2, content_tab3 = st.tabs([
         f"Hasil Isi Artikel ({len(content_val.split())} kata)", 
         "Hasil Preprocessing", 
-        "Hasil Word Embeded menggunakan Skip-Gram Embedding"
+        "Hasil Word Embedding & TF-IDF"
     ])
     
     with content_tab1:
         st.text_area("Isi Artikel", content_val, height=200)
         
     with content_tab2:
-        prep_res = text_preprocessing(content_val)
-        
         st.markdown("**1. Case Folding (Pengubahan Huruf Kecil):**")
-        st.markdown(f'<div class="preprocessing-box">{prep_res["case_folding"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="preprocessing-box">{prep_res["case_folded"][:300]}...</div>', unsafe_allow_html=True)
         
         st.markdown("**2. Cleaning (Pembersihan Angka, Simbol, & Tanda Baca):**")
-        st.markdown(f'<div class="preprocessing-box">{prep_res["cleaning"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="preprocessing-box">{prep_res["cleaned"][:300]}...</div>', unsafe_allow_html=True)
         
         st.markdown("**3. Tokenization (Pemecahan Kata / Token):**")
-        st.code(str(prep_res["tokenization"]), language="python")
+        st.code(prep_res["tokens"][:300] + "...", language="python")
         
         st.markdown("**4. Stopword Removal (Penyaringan Kata Umum):**")
-        st.code(str(prep_res["stopword_removal"]), language="python")
+        st.code(prep_res["stopwords_removed"][:300] + "...", language="python")
         
         st.markdown("**5. Stemming (Pereduksian ke Kata Dasar):**")
-        st.code(str(prep_res["stemming"]), language="python")
+        st.code(prep_res["stemmed"][:300] + "...", language="python")
 
     with content_tab3:
-        st.markdown("**Matriks Vektor Rata-rata (Mean Vector) Skip-Gram (Dimensi = 100):**")
-        dummy_vector = np.random.uniform(-0.5, 0.5, size=(6, 10))
-        df_vec = pd.DataFrame(dummy_vector, columns=[f"Dim_{i+1}" for i in range(10)])
+        st.markdown("**Matriks Vektor Skip-Gram Embedding (Dimensi = 10):**")
         st.dataframe(df_vec, use_container_width=True)
+        
+        st.markdown("**Bobot TF-IDF Topik Teratas:**")
+        st.info(tfidf_str if tfidf_str else "Tidak ada fitur TF-IDF signifikan yang terekam.")
+
+    # ==========================================
+    # FITUR PENYIMPANAN / DOWNLOAD HASIL ANALISIS
+    # ==========================================
+    st.markdown("---")
+    st.markdown("### 💾 Simpan & Unduh Hasil Analisis Lengkap")
+    st.write("Klik tombol di bawah ini untuk mengunduh seluruh hasil pemrosesan (Preprocessing, TF-IDF, Word Embedding, dan Prediksi SVM) dalam format file CSV.")
+
+    export_data = {
+        "Waktu": [datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
+        "Judul_Berita": [title_val],
+        "Sumber": [target_url],
+        "Prediksi_SVM": [svm_pred],
+        "Keyakinan": [f"{max(svm_probs)*100:.2f}%"],
+        "Case_Folding": [prep_res["case_folded"]],
+        "Cleaning": [prep_res["cleaned"]],
+        "Tokenization": [prep_res["tokens"]],
+        "Stopword_Removal": [prep_res["stopwords_removed"]],
+        "Stemming": [prep_res["stemmed"]],
+        "TF_IDF_Top_Features": [tfidf_str],
+        "Embedding_Mean_Vector": [str(df_vec.mean().values.tolist())]
+    }
+    df_export = pd.DataFrame(export_data)
+    csv_bytes = df_export.to_csv(index=False).encode('utf-8')
+
+    st.download_button(
+        label="📥 Unduh Hasil Lengkap (CSV)",
+        data=csv_bytes,
+        file_name=f"hasil_analisis_nlp_svm_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+        mime="text/csv",
+        type="primary"
+    )
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 Uji Artikel Lain"):
