@@ -6,13 +6,13 @@ import requests
 from bs4 import BeautifulSoup
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 import re
 
 # Konfigurasi Halaman Streamlit
 st.set_page_config(
-    page_title="Klasifikasi Berita Naive Bayes Detik.com",
+    page_title="Klasifikasi Berita SVM Detik.com",
     page_icon="📰",
     layout="wide"
 )
@@ -44,8 +44,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<p class="main-header">Sistem Klasifikasi & Ekstraksi Berita (Naive Bayes)</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Dilengkapi Web Scraping Detik.com, Preprocessing Text Mining Per-Poin, dan Klasifikasi Menggunakan Algoritma Naive Bayes.</p>', unsafe_allow_html=True)
+st.markdown('<p class="main-header">Sistem Klasifikasi & Ekstraksi Berita (Support Vector Machine)</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">Dilengkapi Web Scraping Detik.com, Preprocessing Text Mining Per-Poin, dan Klasifikasi Menggunakan Algoritma SVM.</p>', unsafe_allow_html=True)
 
 # Fungsi Scraping Konten dari URL Detik.com
 def scrape_detik_article(url):
@@ -112,7 +112,7 @@ def text_preprocessing(text):
         "stemming": stemmed_tokens[:15]
     }
 
-# Load Dataset & Train Model secara Cached
+# Load Dataset & Train Model SVM secara Cached
 @st.cache_resource
 def load_and_train_models():
     try:
@@ -126,14 +126,14 @@ def load_and_train_models():
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Model Naive Bayes
-    nb_model = MultinomialNB()
-    nb_model.fit(X_train, y_train)
-    nb_acc = accuracy_score(y_test, nb_model.predict(X_test))
+    # Menggunakan Model Support Vector Machine (SVC) dengan probability=True
+    svm_model = SVC(kernel='linear', probability=True, random_state=42)
+    svm_model.fit(X_train, y_train)
+    svm_acc = accuracy_score(y_test, svm_model.predict(X_test))
     
-    return df, vectorizer, nb_model, f"NB Acc: {nb_acc*100:.2f}%"
+    return df, vectorizer, svm_model, f"SVM Acc: {svm_acc*100:.2f}%"
 
-df_data, vectorizer, nb_model, model_status = load_and_train_models()
+df_data, vectorizer, svm_model, model_status = load_and_train_models()
 
 if "Gagal" in model_status:
     st.error(model_status)
@@ -167,7 +167,7 @@ with tab2:
 if st.session_state.classified:
     st.markdown("---")
     
-    with st.spinner("Melakukan web scraping & prediksi model..."):
+    with st.spinner("Melakukan web scraping & prediksi model SVM..."):
         time.sleep(0.4)
         if st.session_state.get('mode') == 'url':
             target_url = st.session_state.input_text
@@ -182,22 +182,22 @@ if st.session_state.classified:
             content_val = st.session_state.input_text
             target_url = "Input Manual"
             
-        # Vektorisasi & Prediksi Naive Bayes
+        # Vektorisasi & Prediksi SVM
         X_pred = vectorizer.transform([content_val])
-        nb_pred = str(nb_model.predict(X_pred)[0]).upper()
-        nb_probs = nb_model.predict_proba(X_pred)[0]
-        classes = [str(c).upper() for c in nb_model.classes_]
+        svm_pred = str(svm_model.predict(X_pred)[0]).upper()
+        svm_probs = svm_model.predict_proba(X_pred)[0]
+        classes = [str(c).upper() for c in svm_model.classes_]
 
     # Tampilkan Hasil Prediksi Utama
-    st.markdown("### 📊 Hasil Prediksi Naive Bayes (MultinomialNB)")
-    st.success(f"**Kategori:** {nb_pred}")
-    st.write("Distribusi Keyakinan:")
+    st.markdown("### 📊 Hasil Prediksi Support Vector Machine (SVC)")
+    st.success(f"**Kategori:** {svm_pred}")
+    st.write("Distribusi Keyakinan (Probability):")
     for idx, cls in enumerate(classes):
-        st.write(f"- {cls.capitalize()}: {nb_probs[idx]*100:.2f}%")
-        st.progress(float(nb_probs[idx]))
+        st.write(f"- {cls.capitalize()}: {svm_probs[idx]*100:.2f}%")
+        st.progress(float(svm_probs[idx]))
 
     # Validasi Domain (Diluar Finance / Sport)
-    max_prob = max(nb_probs)
+    max_prob = max(svm_probs)
     if max_prob < 0.45:
         st.error("⚠️ **Peringatan:** Artikel ini terdeteksi berada di **luar kategori Sport maupun Finance** (tingkat keyakinan model rendah).")
 
