@@ -112,7 +112,7 @@ def text_preprocessing(text):
         "stemming": stemmed_tokens[:15]
     }
 
-# Load Dataset & Train Model SVM secara Cached
+# Load Dataset & Train Model SVM
 @st.cache_resource
 def load_and_train_models():
     try:
