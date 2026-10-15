@@ -192,7 +192,7 @@ if st.session_state.classified:
         tfidf_features_list = sorted(tfidf_features_list, key=lambda x: x[1], reverse=True)
         tfidf_str = ", ".join([f"{word}: {score:.4f}" for word, score in tfidf_features_list[:30]])
 
-        # Dummy / Simulasi Skip-gram embedding matrix (10 dimensi)
+        # Simulasi Skip-gram embedding matrix (10 dimensi)
         embedding_matrix = np.random.uniform(-0.5, 0.5, size=(6, 10))
         df_vec = pd.DataFrame(embedding_matrix, columns=[f"Dim_{i+1}" for i in range(10)])
 
