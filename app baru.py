@@ -114,7 +114,7 @@ def text_preprocessing(text):
 @st.cache_resource
 def load_and_train_models():
     try:
-        df = pd.read_csv('dataset_detik_gabungan_200.csv')
+        df = pd.read_csv(r'C:\Raka\PPW\UTS\dataset_detik_gabungan_200.csv')
     except Exception as e:
         return None, None, None, f"Gagal membaca dataset: {e}"
     
