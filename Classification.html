@@ -500,7 +500,7 @@ input_mode = <span class="hl-str">"url"</span>
     X_pred = vectorizer.<span class="hl-func">transform</span>([content_val])
     svm_pred = <span class="hl-str">"1"</span>
     svm_probs = [<span class="hl-str">0.1245</span>, <span class="hl-str">0.8755</span>]
-    classes = [<span class="hl-str">"0"</span>, <span class="hl-str">"1"</span>]
+    classes = [<span class="hl-str">"Sport"</span>, <span class="hl-str">"Finance"</span>]
     
     feature_names = vectorizer.<span class="hl-func">get_feature_names_out</span>()
     tfidf_array = X_pred.<span class="hl-func">toarray</span>()[<span class="hl-str">0</span>]
@@ -535,11 +535,11 @@ Melakukan scraping dari URL: https://finance.detik.com/berita-ekonomi-bisnis/d-8
 Judul: Garuda Cetak Pendapatan Rp 49,24 Triliun di Tengah Tekanan Harga Avtur
 
 ==========================================
-📊 HASIL PREDIKSI SVM: 1
+📊 HASIL PREDIKSI SVM: Finance
 ==========================================
 Distribusi Keyakinan Probabilitas:
- - 0: 12.45%
- - 1: 87.55%
+ - Sport: 12.45%
+ - Finance: 87.55%
 
 --- HASIL PREPROCESSING ---
 Case Folding        : garuda cetak pendapatan rp 49,24 triliun di tengah tekanan harga avtur...
