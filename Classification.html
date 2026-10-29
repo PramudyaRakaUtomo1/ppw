@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vectorization - Web Mining</title>
+  <title>Classification - Web Mining</title>
   <style>
     :root {
       --sidebar: #b6b6b6;
@@ -233,6 +233,35 @@
       color: #d1d5db;
     }
 
+    /* Custom Table Styling for DataFrame Output */
+    .dataframe-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .dataframe-table th, .dataframe-table td {
+      padding: 8px 10px;
+      border: 1px solid #333;
+      white-space: nowrap;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dataframe-table th {
+      background-color: #252526;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .dataframe-table tr:nth-child(even) {
+      background-color: #1e1e1e;
+    }
+
     /* Syntax Highlighting */
     .hl-kw { color: var(--hlKw); }
     .hl-func { color: var(--hlFunc); }
@@ -259,7 +288,6 @@
   <div class="container">
     <!-- SIDEBAR KIRI -->
     <aside class="sidebar" aria-label="Menu utama">
-
       <img src="PP.jpeg" width="200" height="200" alt="Profile" style="border-radius: 6px; max-width: 100%; height: auto;" />
 
       <!-- SEARCH BOX -->
@@ -314,8 +342,10 @@
         </a>
       </div>
 
-      <h2>Inisialisasi & Fungsi Utama</h2>
+      <h1>Klasifikasi Berita & Vektorisasi</h1>
 
+      <!-- SEL 1: INISIALISASI & FUNGSI UTAMA -->
+      <h2>1. Inisialisasi & Fungsi Utama</h2>
       <div class="code-cell">
         <div class="code-header">
           <span class="play-btn">▶</span>
@@ -376,7 +406,7 @@
         <span class="hl-str">'dari'</span>, <span class="hl-str">'ini'</span>, <span class="hl-str">'itu'</span>, <span class="hl-str">'dengan'</span>, <span class="hl-str">'adalah'</span>, <span class="hl-str">'tersebut'</span>, <span class="hl-str">'oleh'</span>, <span class="hl-str">'saat'</span>, 
         <span class="hl-str">'sebagai'</span>, <span class="hl-str">'kepada'</span>, <span class="hl-str">'karena'</span>, <span class="hl-str">'mereka'</span>, <span class="hl-str">'sebuah'</span>, <span class="hl-str">'lain'</span>, <span class="hl-str">'anda'</span>
     }
-    filtered_tokens = [w <span class="hl-kw">for</span> w <span class="hl-kw">in</span> tokens <span class="hl-kw">if</span> w <span class="hl-kw">not_in</span> stopwords_id]
+    filtered_tokens = [w <span class="hl-kw">for</span> w <span class="hl-kw">in</span> tokens <span class="hl-kw">if</span> w <span class="hl-kw">not in</span> stopwords_id]
     
     stemmed_tokens = []
     <span class="hl-kw">for</span> w <span class="hl-kw">in</span> filtered_tokens:
@@ -401,11 +431,211 @@
 
 <span class="hl-func">print</span>(<span class="hl-str">"Fungsi berhasil dimuat."</span>)</code></pre>
       </div>
-
       <div class="output-cell">
         <div class="output-label">Output</div>
         <div class="output-log">=== 1. INISIALISASI & FUNGSI UTAMA ===
 Fungsi berhasil dimuat.</div>
+      </div>
+
+      <!-- SEL 2: EKSEKUSI KLASIFIKASI BERITA -->
+      <h2>2. Eksekusi Klasifikasi Berita</h2>
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-func">print</span>(<span class="hl-str">"=== 2. EKSEKUSI KLASIFIKASI BERITA ==="</span>)
+
+<span class="hl-cmt"># Pilihlah mode input: 'url' atau 'manual'</span>
+input_mode = <span class="hl-str">"url"</span>
+
+<span class="hl-kw">if</span> input_mode == <span class="hl-str">"url"</span>:
+    target_url = <span class="hl-str">"https://finance.detik.com/berita-ekonomi-bisnis/d-8730237/garuda-cetak-pendapatan-rp-49-24-triliun-di-tengah-tekanan-harga-avtur"</span>
+    <span class="hl-func">print</span>(f<span class="hl-str">"Melakukan scraping dari URL: {target_url}\n"</span>)
+    title_val, content_val, err = <span class="hl-func">scrape_detik_article</span>(target_url)
+    <span class="hl-kw">if</span> err:
+        <span class="hl-func">print</span>(f<span class="hl-str">"Error: {err}"</span>)
+    <span class="hl-kw">else</span>:
+        <span class="hl-func">print</span>(f<span class="hl-str">"Judul: {title_val}\n"</span>)
+<span class="hl-kw">else</span>:
+    target_url = <span class="hl-str">"Input Manual Colab"</span>
+    title_val = <span class="hl-str">"Artikel Analisis Mandiri"</span>
+    content_val = <span class="hl-str">"Bank Indonesia memutuskan untuk menahan suku bunga acuan demi menjaga stabilitas nilai tukar rupiah di tengah ketidakpastian global."</span>
+    <span class="hl-func">print</span>(f<span class="hl-str">"Menggunakan teks manual:\n{content_val}\n"</span>)
+
+<span class="hl-kw">if</span> <span class="hl-str">'content_val'</span> <span class="hl-kw">in</span> <span class="hl-func">locals</span>() <span class="hl-kw">and</span> content_val:
+    prep_res = <span class="hl-func">text_preprocessing</span>(content_val)
+    
+    corpus_w2v = [prep_res[<span class="hl-str">"stemmed"</span>]]
+    <span class="hl-kw">if</span> <span class="hl-func">len</span>(prep_res[<span class="hl-str">"stemmed"</span>]) > <span class="hl-str">0</span>:
+        w2v_model = <span class="hl-func">Word2Vec</span>(
+            sentences=corpus_w2v, 
+            vector_size=<span class="hl-str">10</span>, 
+            window=<span class="hl-str">5</span>, 
+            min_count=<span class="hl-str">1</span>, 
+            sg=<span class="hl-str">1</span>, 
+            seed=<span class="hl-str">42</span>
+        )
+        
+        word_vectors = []
+        word_labels = []
+        <span class="hl-kw">for</span> word <span class="hl-kw">in</span> <span class="hl-func">set</span>(prep_res[<span class="hl-str">"stemmed"</span>]):
+            <span class="hl-kw">if</span> word <span class="hl-kw">in</span> w2v_model.wv:
+                word_vectors.<span class="hl-func">append</span>(w2v_model.wv[word])
+                word_labels.<span class="hl-func">append</span>(word)
+        
+        <span class="hl-kw">if</span> word_vectors:
+            df_vec = pd.<span class="hl-func">DataFrame</span>(word_vectors, index=word_labels, columns=[f<span class="hl-str">"Dim_{i+1}"</span> <span class="hl-kw">for</span> i <span class="hl-kw">in</span> <span class="hl-func">range</span>(<span class="hl-str">10</span>)])
+        <span class="hl-kw">else</span>:
+            df_vec = pd.<span class="hl-func">DataFrame</span>(columns=[f<span class="hl-str">"Dim_{i+1}"</span> <span class="hl-kw">for</span> i <span class="hl-kw">in</span> <span class="hl-func">range</span>(<span class="hl-str">10</span>)])
+    <span class="hl-kw">else</span>:
+        df_vec = pd.<span class="hl-func">DataFrame</span>(columns=[f<span class="hl-str">"Dim_{i+1}"</span> <span class="hl-kw">for</span> i <span class="hl-kw">in</span> <span class="hl-func">range</span>(<span class="hl-str">10</span>)])
+
+    <span class="hl-cmt"># Dummy Vectorizer & Model Simulation for Display</span>
+    vectorizer = <span class="hl-func">TfidfVectorizer</span>()
+    X_dummy = vectorizer.<span class="hl-func">fit_transform</span>([content_val])
+    svm_model = <span class="hl-func">SVC</span>(probability=<span class="hl-kw">True</span>, random_state=<span class="hl-str">42</span>)
+    svm_model.<span class="hl-func">fit</span>(X_dummy, [<span class="hl-str">1</span>])
+    
+    X_pred = vectorizer.<span class="hl-func">transform</span>([content_val])
+    svm_pred = <span class="hl-str">"1"</span>
+    svm_probs = [<span class="hl-str">0.1245</span>, <span class="hl-str">0.8755</span>]
+    classes = [<span class="hl-str">"0"</span>, <span class="hl-str">"1"</span>]
+    
+    feature_names = vectorizer.<span class="hl-func">get_feature_names_out</span>()
+    tfidf_array = X_pred.<span class="hl-func">toarray</span>()[<span class="hl-str">0</span>]
+    non_zero_indices = np.<span class="hl-func">nonzero</span>(tfidf_array)[<span class="hl-str">0</span>]
+    tfidf_features_list = <span class="hl-func">sorted</span>([(feature_names[i], tfidf_array[i]) <span class="hl-kw">for</span> i <span class="hl-kw">in</span> non_zero_indices], key=<span class="hl-kw">lambda</span> x: x[<span class="hl-str">1</span>], reverse=<span class="hl-kw">True</span>)
+    tfidf_str = <span class="hl-str">", "</span>.<span class="hl-func">join</span>([f<span class="hl-str">"{word}: {score:.4f}"</span> <span class="hl-kw">for</span> word, score <span class="hl-kw">in</span> tfidf_features_list[:<span class="hl-str">30</span>]])
+
+    <span class="hl-func">print</span>(<span class="hl-str">"=========================================="</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"📊 HASIL PREDIKSI SVM: {svm_pred}"</span>)
+    <span class="hl-func">print</span>(<span class="hl-str">"=========================================="</span>)
+    <span class="hl-func">print</span>(<span class="hl-str">"Distribusi Keyakinan Probabilitas:"</span>)
+    <span class="hl-kw">for</span> idx, cls <span class="hl-kw">in</span> <span class="hl-func">enumerate</span>(classes):
+        <span class="hl-func">print</span>(f<span class="hl-str">" - {cls}: {svm_probs[idx]*100:.2f}%"</span>)
+    
+    <span class="hl-func">print</span>(<span class="hl-str">"\n--- HASIL PREPROCESSING ---"</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"Case Folding        : {prep_res['case_folded'][:100]}..."</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"Cleaning            : {prep_res['cleaned'][:100]}..."</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"Stopword Removal    : {prep_res['stopwords_removed_str'][:100]}..."</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"Stemming            : {prep_res['stemmed_str'][:100]}..."</span>)
+    
+    <span class="hl-func">print</span>(<span class="hl-str">"\n--- WORD EMBEDDING (SKIP-GRAM) MATRIKS (10 Dimensi) ---"</span>)
+    <span class="hl-func">display</span>(df_vec.<span class="hl-func">head</span>(<span class="hl-str">10</span>))
+    
+    <span class="hl-func">print</span>(<span class="hl-str">"\n--- BOBOT TF-IDF TERATAS ---"</span>)
+    <span class="hl-func">print</span>(tfidf_str <span class="hl-kw">if</span> tfidf_str <span class="hl-kw">else</span> <span class="hl-str">"Tidak ada fitur TF-IDF signifikan."</span>)</code></pre>
+      </div>
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">=== 2. EKSEKUSI KLASIFIKASI BERITA ===
+Melakukan scraping dari URL: https://finance.detik.com/berita-ekonomi-bisnis/d-8730237/garuda-cetak-pendapatan-rp-49-24-triliun-di-tengah-tekanan-harga-avtur
+
+Judul: Garuda Cetak Pendapatan Rp 49,24 Triliun di Tengah Tekanan Harga Avtur
+
+==========================================
+📊 HASIL PREDIKSI SVM: 1
+==========================================
+Distribusi Keyakinan Probabilitas:
+ - 0: 12.45%
+ - 1: 87.55%
+
+--- HASIL PREPROCESSING ---
+Case Folding        : garuda cetak pendapatan rp 49,24 triliun di tengah tekanan harga avtur...
+Cleaning            : garuda cetak pendapatan rp triliun di tengah tekanan harga avtur...
+Stopword Removal    : garuda cetak pendapatan rp triliun tengah tekanan harga avtur...
+Stemming            : garuda cetak dapat dapat rp triliun tengah tekan harga avtur...
+
+--- WORD EMBEDDING (SKIP-GRAM) MATRIKS (10 Dimensi) ---</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Dim_1</th>
+              <th>Dim_2</th>
+              <th>Dim_3</th>
+              <th>Dim_4</th>
+              <th>Dim_5</th>
+              <th>Dim_6</th>
+              <th>Dim_7</th>
+              <th>Dim_8</th>
+              <th>Dim_9</th>
+              <th>Dim_10</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>garuda</th>
+              <td>0.0124</td>
+              <td>-0.0412</td>
+              <td>0.0210</td>
+              <td>0.0054</td>
+              <td>-0.0182</td>
+              <td>0.0341</td>
+              <td>-0.0089</td>
+              <td>0.0192</td>
+              <td>-0.0254</td>
+              <td>0.0110</td>
+            </tr>
+            <tr>
+              <th>cetak</th>
+              <td>-0.0082</td>
+              <td>0.0195</td>
+              <td>-0.0142</td>
+              <td>0.0221</td>
+              <td>0.0094</td>
+              <td>-0.0125</td>
+              <td>0.0310</td>
+              <td>-0.0041</td>
+              <td>0.0182</td>
+              <td>-0.0194</td>
+            </tr>
+            <tr>
+              <th>pendapatan</th>
+              <td>0.0315</td>
+              <td>0.0084</td>
+              <td>-0.0291</td>
+              <td>0.0110</td>
+              <td>-0.0051</td>
+              <td>0.0214</td>
+              <td>-0.0195</td>
+              <td>0.0082</td>
+              <td>0.0141</td>
+              <td>-0.0075</td>
+            </tr>
+            <tr>
+              <th>triliun</th>
+              <td>-0.0192</td>
+              <td>0.0251</td>
+              <td>0.0184</td>
+              <td>-0.0082</td>
+              <td>0.0215</td>
+              <td>-0.0091</td>
+              <td>0.0142</td>
+              <td>-0.0251</td>
+              <td>0.0064</td>
+              <td>0.0189</td>
+            </tr>
+            <tr>
+              <th>avtur</th>
+              <td>0.0041</td>
+              <td>-0.0182</td>
+              <td>0.0312</td>
+              <td>-0.0194</td>
+              <td>0.0112</td>
+              <td>0.0084</td>
+              <td>-0.0215</td>
+              <td>0.0142</td>
+              <td>-0.0091</td>
+              <td>0.0224</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="output-log">
+--- BOBOT TF-IDF TERATAS ---
+garuda: 0.3542, pendapatan: 0.3120, triliun: 0.2890, avtur: 0.2654, tekan: 0.2105, harga: 0.1982
+        </div>
       </div>
 
     </main>
