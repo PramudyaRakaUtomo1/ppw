@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vectorization - Web Mining</title>
+  <style>
+    :root {
+      --sidebar: #b6b6b6;
+      --sidebarText: #000000;
+      --content: #ffffff;
+      --accent: #4caf50;
+
+      /* Editor & Code Colors */
+      --editorBg: #1e1e1e;
+      --outputBg: #181818;
+      --editorText: #d4d4d4;
+      --hlFunc: #dcdcaa;
+      --hlStr: #ce9178;
+      --hlCmt: #6a9955;
+      --hlDef: #9cdcfe;
+      --hlType: #4ec9b0;
+      --hlKw: #c586c0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #ffffff;
+    }
+
+    /* Layout umum */
+    .container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Kiri */
+    .sidebar {
+      background: var(--sidebar);
+      color: var(--sidebarText);
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    /* Search Box */
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      background: #ffffff;
+      color: #333;
+    }
+
+    /* Menu Navigasi */
+    .menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li {
+      margin-bottom: 8px;
+    }
+
+    .menu a {
+      color: #000000;
+      text-decoration: none;
+      display: block;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: background 0.2s;
+    }
+
+    .menu a.active {
+      background: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    #no-result {
+      display: none;
+      font-size: 13px;
+      color: #444;
+      padding: 8px;
+    }
+
+    /* Area Konten Utama */
+    .content {
+      padding: 40px 60px;
+      background: var(--content);
+      max-width: 1200px;
+    }
+
+    .github-link {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #000;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 35px;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #222;
+      margin-bottom: 16px;
+    }
+
+    ul.activities {
+      margin: 0 0 24px 20px;
+      padding: 0;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    ul.activities li {
+      margin-bottom: 6px;
+    }
+
+    /* =========================
+       CODE BOX / CELL JUPYTER
+       ========================= */
+
+    .code-cell {
+      background-color: var(--editorBg);
+      border-radius: 6px 6px 0 0;
+      border-left: 4px solid var(--accent);
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px 0 16px;
+      color: #858585;
+      font-size: 12px;
+    }
+
+    .play-btn {
+      color: #858585;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .copy-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #858585;
+      background: none;
+      border: none;
+      font-size: 12px;
+      padding: 0;
+    }
+
+    .copy-btn:hover {
+      color: #ffffff;
+    }
+
+    .code-cell pre {
+      margin: 0;
+      padding: 10px 16px 18px 16px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--editorText);
+    }
+
+    /* Output Cell Style (Notebook Style) */
+    .output-cell {
+      background-color: var(--outputBg);
+      border-radius: 0 0 6px 6px;
+      border-left: 4px solid #555;
+      border-top: 1px solid #333;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      color: #cccccc;
+      overflow-x: auto;
+    }
+
+    .output-label {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: bold;
+    }
+
+    .output-log {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      color: #d1d5db;
+    }
+
+    /* Custom Table Styling for DataFrame Output */
+    .dataframe-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .dataframe-table th, .dataframe-table td {
+      padding: 8px 10px;
+      border: 1px solid #333;
+      white-space: nowrap;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dataframe-table th {
+      background-color: #252526;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .dataframe-table tr:nth-child(even) {
+      background-color: #1e1e1e;
+    }
+
+    /* Syntax Highlighting */
+    .hl-kw { color: var(--hlKw); }
+    .hl-func { color: var(--hlFunc); }
+    .hl-str { color: var(--hlStr); }
+    .hl-cmt { color: var(--hlCmt); font-style: italic; }
+    .hl-def { color: var(--hlDef); }
+    .hl-type { color: var(--hlType); }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+      .content {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- SIDEBAR KIRI -->
+    <aside class="sidebar" aria-label="Menu utama">
+
+      <img src="PP.jpeg" width="200" height="200" alt="Profile" style="border-radius: 6px; max-width: 100%; height: auto;" />
+
+      <!-- SEARCH BOX -->
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search..."
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- MENU -->
+      <ul class="menu" id="menuList">
+
+        <li>
+          <a href="profile.html">
+            Profile
+          </a>
+        </li>
+
+        <li>
+          <a href="index.html">
+            Pengantar Web Mining
+          </a>
+        </li>
+
+        <li>
+          <a href="Data_Understanding.html">
+            Data Understanding
+          </a>
+        </li>
+
+        <li>
+          <a href="Crawling.html">
+            Crawling Data
+          </a>
+        </li>
+
+        <li>
+          <a href="Preprocessing.html">
+            Preprocessing
+          </a>
+        </li>
+
+        <li>
+          <a href="Vectorization.html" class="active">
+            Vectorization
+          </a>
+        </li>
+        <li>
+          <a href="Modeling.html">
+            Modeling
+          </a>
+        </li>
+        <li>
+          <a href="Classification.html">
+            Classification
+          </a>
+        </li>
+
+      </ul>
+
+      <!-- PESAN JIKA TIDAK ADA HASIL -->
+      <div id="no-result">
+        Halaman tidak ditemukan.
+      </div>
+
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <main class="content" role="main">
+      <div class="github-link">
+        <a href="https://github.com/PramudyaRakaUtomo1/ppw" target="_blank" rel="noopener">
+          <svg height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true"><path fill="#000" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+        </a>
+      </div>
+
+      <h2>Representasi TF-IDF</h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>tfidf_full = <span class="hl-func">TfidfVectorizer</span>(
+    min_df=<span class="hl-str">2</span>,
+    max_df=<span class="hl-str">0.95</span>
+)
+
+X_full_tfidf = tfidf_full.<span class="hl-func">fit_transform</span>(
+    df[<span class="hl-str">"berita_clean"</span>]
+)
+
+nama_fitur_full = tfidf_full.<span class="hl-func">get_feature_names_out</span>()
+
+df_full_tfidf = pd.<span class="hl-func">DataFrame</span>(
+    X_full_tfidf.<span class="hl-func">toarray</span>(),
+    columns=nama_fitur_full
+)
+
+df_full_tfidf[<span class="hl-str">"label"</span>] = df[<span class="hl-str">"label_num"</span>]
+
+<span class="hl-func">display</span>(df_full_tfidf.<span class="hl-func">head</span>())
+
+df_full_tfidf.<span class="hl-func">to_excel</span>(
+    <span class="hl-str">"data_tfidf_full_dataset.xlsx"</span>,
+    index=<span class="hl-kw">False</span>
+)</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>abad</th>
+              <th>abadi</th>
+              <th>acara</th>
+              <th>ada</th>
+              <th>adalah</th>
+              <th>...</th>
+              <th>label</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>0</th>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0245</td>
+              <td>0.0121</td>
+              <td>...</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0185</td>
+              <td>0.0000</td>
+              <td>0.0154</td>
+              <td>...</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0000</td>
+              <td>0.0312</td>
+              <td>0.0000</td>
+              <td>...</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0000</td>
+              <td>0.0118</td>
+              <td>0.0205</td>
+              <td>...</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0000</td>
+              <td>0.0000</td>
+              <td>0.0142</td>
+              <td>...</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="output-log">File 'data_tfidf_full_dataset.xlsx' berhasil disimpan.</div>
+      </div>
+
+      <h2>Membagi Data 160 Training dan 40 Testing</h2>
+
+      <p>
+        Kode ini berfungsi untuk membagi dataset menjadi dua bagian, yaitu data latih (train) dan data uji (test) yang nantinya akan digunakan untuk melatih dan menguji model machine learning.
+      </p>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>X_train_text, X_test_text, y_train, y_test = <span class="hl-func">train_test_split</span>(
+    df[<span class="hl-str">"berita_clean"</span>],
+    df[<span class="hl-str">"label_num"</span>],
+    test_size=<span class="hl-str">40</span>,
+    random_state=<span class="hl-str">42</span>,
+    stratify=df[<span class="hl-str">"label_num"</span>]
+)
+
+<span class="hl-func">print</span>(
+    <span class="hl-str">"Jumlah training:"</span>,
+    <span class="hl-func">len</span>(X_train_text)
+)
+
+<span class="hl-func">print</span>(
+    <span class="hl-str">"Jumlah testing:"</span>,
+    <span class="hl-func">len</span>(X_test_text)
+)
+
+<span class="hl-func">print</span>(<span class="hl-str">"TRAINING"</span>)
+<span class="hl-func">print</span>(y_train.<span class="hl-func">value_counts</span>())
+
+<span class="hl-func">print</span>(<span class="hl-str">"\nTESTING"</span>)
+<span class="hl-func">print</span>(y_test.<span class="hl-func">value_counts</span>())</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <div class="output-log">Jumlah training: 160
+Jumlah testing: 40
+TRAINING
+label_num
+1    80
+0    80
+Name: count, dtype: int64
+
+TESTING
+label_num
+1    20
+0    20
+Name: count, dtype: int64</div>
+      </div>
+
+      <h2>Mereduksi dimensi pada data TF-IDF menggunakan PCA </h2>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code>pca_full = <span class="hl-func">PCA</span>(
+    n_components=<span class="hl-str">20</span>,
+    random_state=<span class="hl-str">42</span>
+)
+
+X_full_tfidf_features = df_full_tfidf.<span class="hl-func">drop</span>(columns=[<span class="hl-str">'label'</span>])
+
+X_full_pca = pca_full.<span class="hl-func">fit_transform</span>(
+    X_full_tfidf_features
+)
+
+df_full_pca = pd.<span class="hl-func">DataFrame</span>(
+    X_full_pca,
+    columns=nama_pc <span class="hl-cmt"># Reuse existing PC column names from previous PCA</span>
+)
+
+df_full_pca[<span class="hl-str">"label"</span>] = df_full_tfidf[<span class="hl-str">"label"</span>]
+
+<span class="hl-func">display</span>(df_full_pca.<span class="hl-func">head</span>())
+
+<span class="hl-func">print</span>(<span class="hl-str">"Dimensi data TF-IDF penuh setelah PCA:"</span>, df_full_pca.shape)
+
+<span class="hl-cmt"># Simpan data hasil PCA dari TF-IDF Keseluruhan</span>
+df_full_pca.<span class="hl-func">to_excel</span>(
+    <span class="hl-str">"data_tfidf_full_pca.xlsx"</span>,
+    index=<span class="hl-kw">False</span>
+)</code></pre>
+      </div>
+
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <table class="dataframe-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>PC1</th>
+              <th>PC2</th>
+              <th>PC3</th>
+              <th>PC4</th>
+              <th>...</th>
+              <th>PC20</th>
+              <th>label</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>0</th>
+              <td>-0.1245</td>
+              <td>0.0821</td>
+              <td>-0.0312</td>
+              <td>0.0154</td>
+              <td>...</td>
+              <td>0.0021</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td>-0.1082</td>
+              <td>0.0654</td>
+              <td>-0.0210</td>
+              <td>0.0089</td>
+              <td>...</td>
+              <td>-0.0042</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>-0.1410</td>
+              <td>0.0911</td>
+              <td>-0.0451</td>
+              <td>0.0211</td>
+              <td>...</td>
+              <td>0.0018</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>-0.0954</td>
+              <td>0.0512</td>
+              <td>-0.0188</td>
+              <td>0.0064</td>
+              <td>...</td>
+              <td>-0.0011</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td>-0.1158</td>
+              <td>0.0742</td>
+              <td>-0.0289</td>
+              <td>0.0123</td>
+              <td>...</td>
+              <td>0.0035</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="output-log">Dimensi data TF-IDF penuh setelah PCA: (200, 21)
+File 'data_tfidf_full_pca.xlsx' berhasil disimpan.</div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function copyCode(button) {
+      const cell = button.closest('.code-cell');
+      const code = cell.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const originalText = button.innerText;
+        button.innerText = 'copied! ✓';
+        setTimeout(() => {
+          button.innerText = originalText;
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
