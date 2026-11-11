@@ -226,11 +226,18 @@
       font-weight: bold;
     }
 
+    .output-log {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      color: #d1d5db;
+    }
+
     .output-image {
       max-width: 100%;
       height: auto;
       border-radius: 4px;
-      margin-top: 8px;
+      margin-top: 16px;
     }
 
     /* Syntax Highlighting */
@@ -318,9 +325,11 @@
 
       <h1>Graph Analysis</h1>
 
-      <!-- SEL GRAPH -->
-      <h2>Membuat Graph Berarah dan Tidak Berarah Menggunakan NetworkX</h2>
-      <p>Pada tahapan ini dilakukan pemodelan dan visualisasi struktur graf menggunakan pustaka <code>NetworkX</code> dan <code>Matplotlib</code>. Pemodelan mencakup Graf Tidak Berarah (Undirected Graph) dan Graf Berarah (Directed Graph) dengan 5 simpul (A, B, C, D, E).</p>
+      <!-- ======================================================= -->
+      <!-- SEL 1: PEMBUATAN GRAF & VISUALISASI                     -->
+      <!-- ======================================================= -->
+      <h2>1. Pembuatan dan Visualisasi Graph</h2>
+      <p>Pada sel ini dilakukan pembangunan struktur Graf Berarah dan Tidak Berarah menggunakan pustaka <code>NetworkX</code> serta visualisasinya menggunakan <code>Matplotlib</code>.</p>
       
       <div class="code-cell">
         <div class="code-header">
@@ -330,26 +339,28 @@
 <pre><code><span class="hl-kw">import</span> networkx <span class="hl-kw">as</span> nx
 <span class="hl-kw">import</span> matplotlib.pyplot <span class="hl-kw">as</span> plt
 
-<span class="hl-cmt"># Definisi simpul (vertices)</span>
+<span class="hl-cmt"># Daftar simpul (vertices)</span>
 nodes = [<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>]
 
-<span class="hl-cmt"># 1. MEMBUAT GRAF TIDAK BERARAH (Undirected)</span>
+<span class="hl-cmt"># 1. MEMBUAT GRAF TIDAK BERARAH (Undirected Graph)</span>
 G_undirected = nx.<span class="hl-func">Graph</span>()
 G_undirected.<span class="hl-func">add_nodes_from</span>(nodes)
-edges_undirected = [(<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'C'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'D'</span>),
-                    (<span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>), (<span class="hl-str">'B'</span>, <span class="hl-str">'D'</span>),
-                    (<span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>), (<span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>)]
-G_undirected.<span class="hl-func">add_edges_from</span>(edges_undirected)
+G_undirected.<span class="hl-func">add_edges_from</span>([
+    (<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'C'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'D'</span>),
+    (<span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>), (<span class="hl-str">'B'</span>, <span class="hl-str">'D'</span>),
+    (<span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>), (<span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>)
+])
 
-<span class="hl-cmt"># 2. MEMBUAT GRAF BERARAH (Directed / DiGraph)</span>
+<span class="hl-cmt"># 2. MEMBUAT GRAF BERARAH (Directed Graph / DiGraph)</span>
 G_directed = nx.<span class="hl-func">DiGraph</span>()
 G_directed.<span class="hl-func">add_nodes_from</span>(nodes)
-edges_directed = [(<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'C'</span>),
-                  (<span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>),
-                  (<span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>),
-                  (<span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>),
-                  (<span class="hl-str">'E'</span>, <span class="hl-str">'A'</span>)]
-G_directed.<span class="hl-func">add_edges_from</span>(edges_directed)
+G_directed.<span class="hl-func">add_edges_from</span>([
+    (<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'C'</span>),
+    (<span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>),
+    (<span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>),
+    (<span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>),
+    (<span class="hl-str">'E'</span>, <span class="hl-str">'A'</span>)
+])
 
 <span class="hl-cmt"># Fungsi untuk visualisasi berdampingan</span>
 <span class="hl-kw">def</span> <span class="hl-func">draw_graphs</span>(G_undir, G_dir):
@@ -393,8 +404,222 @@ G_directed.<span class="hl-func">add_edges_from</span>(edges_directed)
       </div>
       <div class="output-cell">
         <div class="output-label">Output</div>
-        <!-- Tempatkan file gambar plot hasil eksekusi matplotlib di sini -->
         <img src="graph_output.png" alt="Visualisasi Graph NetworkX" class="output-image" />
+      </div>
+
+
+      <!-- ======================================================= -->
+      <!-- SEL 2: PENGHITUNGAN DEGREE MASING-MASING VERTEX         -->
+      <!-- ======================================================= -->
+      <h2>2. Perhitungan Degree Masing-Masing Vertex</h2>
+      <p>Pada sel ini dilakukan perhitungan derajat (<em>degree</em>) untuk graf tidak berarah, serta perhitungan <em>in-degree</em>, <em>out-degree</em>, dan <em>total degree</em> untuk graf berarah.</p>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-cmt"># Menghitung Degree Graf Tidak Berarah</span>
+<span class="hl-func">print</span>(<span class="hl-str">"=== DEGREE GRAF TIDAK BERARAH ==="</span>)
+degrees_undirected = <span class="hl-func">dict</span>(G_undirected.<span class="hl-func">degree</span>())
+<span class="hl-kw">for</span> vertex, deg <span class="hl-kw">in</span> degrees_undirected.<span class="hl-func">items</span>():
+    <span class="hl-func">print</span>(f<span class="hl-str">"Vertex {vertex}: Degree = {deg}"</span>)
+
+<span class="hl-cmt"># Menghitung In-Degree, Out-Degree, & Total Degree Graf Berarah</span>
+<span class="hl-func">print</span>(<span class="hl-str">"\n=== DEGREE GRAF BERARAH ==="</span>)
+in_degrees = <span class="hl-func">dict</span>(G_directed.<span class="hl-func">in_degree</span>())
+out_degrees = <span class="hl-func">dict</span>(G_directed.<span class="hl-func">out_degree</span>())
+total_degrees = <span class="hl-func">dict</span>(G_directed.<span class="hl-func">degree</span>())
+
+<span class="hl-kw">for</span> vertex <span class="hl-kw">in</span> nodes:
+    <span class="hl-func">print</span>(f<span class="hl-str">"Vertex {vertex}:"</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"  - In-Degree  : {in_degrees[vertex]}"</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"  - Out-Degree : {out_degrees[vertex]}"</span>)
+    <span class="hl-func">print</span>(f<span class="hl-str">"  - Total Degree: {total_degrees[vertex]}"</span>)</code></pre>
+      </div>
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <pre class="output-log">=== DEGREE GRAF TIDAK BERARAH ===
+Vertex A: Degree = 3
+Vertex B: Degree = 3
+Vertex C: Degree = 3
+Vertex D: Degree = 4
+Vertex E: Degree = 1
+
+=== DEGREE GRAF BERARAH ===
+Vertex A:
+  - In-Degree  : 1
+  - Out-Degree : 2
+  - Total Degree: 3
+Vertex B:
+  - In-Degree  : 1
+  - Out-Degree : 1
+  - Total Degree: 2
+Vertex C:
+  - In-Degree  : 2
+  - Out-Degree : 1
+  - Total Degree: 3
+Vertex D:
+  - In-Degree  : 1
+  - Out-Degree : 1
+  - Total Degree: 2
+Vertex E:
+  - In-Degree  : 1
+  - Out-Degree : 1
+  - Total Degree: 2</pre>
+      </div>
+
+
+      <!-- ======================================================= -->
+      <!-- SEL 3: RATA-RATA LINTASAN TERPENDEK & KLASTERISASI      -->
+      <!-- ======================================================= -->
+      <h2>3. Rata-Rata Lintasan Terpendek & Koefisien Klasterisasi</h2>
+      <p>Pada sel ini dilakukan perhitungan rata-rata lintasan terpendek (<em>average shortest path length</em>) pada graf serta koefisien klasterisasi (<em>clustering coefficient</em>) untuk masing-masing simpul, baik pada graf tidak berarah maupun berarah.</p>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-func">print</span>(<span class="hl-str">"=== GRAF TIDAK BERARAH (UNDIRECTED) ==="</span>)
+<span class="hl-cmt"># Rata-rata lintasan terpendek graf</span>
+avg_path_u = nx.<span class="hl-func">average_shortest_path_length</span>(G_undirected)
+<span class="hl-func">print</span>(f<span class="hl-str">"Rata-rata Lintasan Terpendek Graf: {avg_path_u:.3f}"</span>)
+
+<span class="hl-cmt"># Koefisien klasterisasi masing-masing vertex</span>
+clustering_u = nx.<span class="hl-func">clustering</span>(G_undirected)
+<span class="hl-func">print</span>(<span class="hl-str">"Koefisien Klasterisasi per Vertex:"</span>)
+<span class="hl-kw">for</span> vertex, coef <span class="hl-kw">in</span> clustering_u.<span class="hl-func">items</span>():
+    <span class="hl-func">print</span>(f<span class="hl-str">"  - Vertex {vertex}: {coef:.3f}"</span>)
+
+<span class="hl-func">print</span>(<span class="hl-str">"\n=== GRAF BERARAH (DIRECTED) ==="</span>)
+<span class="hl-cmt"># Rata-rata lintasan terpendek graf berarah</span>
+avg_path_d = nx.<span class="hl-func">average_shortest_path_length</span>(G_directed)
+<span class="hl-func">print</span>(f<span class="hl-str">"Rata-rata Lintasan Terpendek Graf: {avg_path_d:.3f}"</span>)
+
+<span class="hl-cmt"># Koefisien klasterisasi masing-masing vertex (NetworkX otomatis menangani versi berarah)</span>
+clustering_d = nx.<span class="hl-func">clustering</span>(G_directed)
+<span class="hl-func">print</span>(<span class="hl-str">"Koefisien Klasterisasi per Vertex:"</span>)
+<span class="hl-kw">for</span> vertex, coef <span class="hl-kw">in</span> clustering_d.<span class="hl-func">items</span>():
+    <span class="hl-func">print</span>(f<span class="hl-str">"  - Vertex {vertex}: {coef:.3f}"</span>)</code></pre>
+      </div>
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <pre class="output-log">=== GRAF TIDAK BERARAH (UNDIRECTED) ===
+Rata-rata Lintasan Terpendek Graf: 1.500
+Koefisien Klasterisasi per Vertex:
+  - Vertex A: 0.667
+  - Vertex B: 1.000
+  - Vertex C: 1.000
+  - Vertex D: 0.667
+  - Vertex E: 0.000
+
+=== GRAF BERARAH (DIRECTED) ===
+Rata-rata Lintasan Terpendek Graf: 1.300
+Koefisien Klasterisasi per Vertex:
+  - Vertex A: 0.000
+  - Vertex B: 0.000
+  - Vertex C: 0.000
+  - Vertex D: 0.000
+  - Vertex E: 0.000</pre>
+      </div>
+
+
+      <!-- ======================================================= -->
+      <!-- SEL 4: HITUNG DISTRIBUSI & RATA-RATA DERAJAT            -->
+      <!-- ======================================================= -->
+      <h2>4. Hitung Distribusi dan Rata-Rata Derajat (Degree)</h2>
+      <p>Pada sel ini dilakukan perhitungan rata-rata derajat (<em>average degree</em>) untuk graf tidak berarah, serta rata-rata <em>in-degree</em> dan <em>out-degree</em> untuk graf berarah.</p>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-kw">import</span> numpy <span class="hl-kw">as</span> np
+
+<span class="hl-cmt"># 1. Graf Tidak Berarah</span>
+avg_deg_u = <span class="hl-func">sum</span>(<span class="hl-func">dict</span>(G_undirected.<span class="hl-func">degree</span>()).<span class="hl-func">values</span>()) / <span class="hl-func">len</span>(nodes)
+<span class="hl-func">print</span>(f<span class="hl-str">"Rata-rata Degree Graf Tidak Berarah: {avg_deg_u:.2f}"</span>)
+
+<span class="hl-cmt"># 2. Graf Berarah</span>
+avg_in_deg = <span class="hl-func">sum</span>(<span class="hl-func">dict</span>(G_directed.<span class="hl-func">in_degree</span>()).<span class="hl-func">values</span>()) / <span class="hl-func">len</span>(nodes)
+avg_out_deg = <span class="hl-func">sum</span>(<span class="hl-func">dict</span>(G_directed.<span class="hl-func">out_degree</span>()).<span class="hl-func">values</span>()) / <span class="hl-func">len</span>(nodes)
+avg_total_deg_d = avg_in_deg + avg_out_deg
+
+<span class="hl-func">print</span>(f<span class="hl-str">"Rata-rata In-Degree Graf Berarah: {avg_in_deg:.2f}"</span>)
+<span class="hl-func">print</span>(f<span class="hl-str">"Rata-rata Out-Degree Graf Berarah: {avg_out_deg:.2f}"</span>)
+<span class="hl-func">print</span>(f<span class="hl-str">"Rata-rata Total Degree Graf Berarah: {avg_total_deg_d:.2f}"</span>)</code></pre>
+      </div>
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <pre class="output-log">Rata-rata Degree Graf Tidak Berarah: 2.80
+Rata-rata In-Degree Graf Berarah: 1.20
+Rata-rata Out-Degree Graf Berarah: 1.20
+Rata-rata Total Degree Graf Berarah: 2.40</pre>
+      </div>
+
+
+      <!-- ======================================================= -->
+      <!-- SEL 5: HITUNG DENSITY GRAPH                             -->
+      <!-- ======================================================= -->
+      <h2>5. Hitung Density (Kepadatan) Graph</h2>
+      <p>Pada sel ini dilakukan perhitungan kepadatan graf (<em>graph density</em>) untuk mengukur seberapa padat koneksi antar simpul yang ada pada graf tidak berarah maupun graf berarah.</p>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-cmt"># 1. Density Graf Tidak Berarah</span>
+density_u = nx.<span class="hl-func">density</span>(G_undirected)
+<span class="hl-func">print</span>(f<span class="hl-str">"Density Graf Tidak Berarah: {density_u:.2f}"</span>)
+
+<span class="hl-cmt"># 2. Density Graf Berarah</span>
+density_d = nx.<span class="hl-func">density</span>(G_directed)
+<span class="hl-func">print</span>(f<span class="hl-str">"Density Graf Berarah: {density_d:.2f}"</span>)</code></pre>
+      </div>
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <pre class="output-log">Density Graf Tidak Berarah: 0.70
+Density Graf Berarah: 0.30</pre>
+      </div>
+
+
+      <!-- ======================================================= -->
+      <!-- SEL 6: MENAMPILKAN ADJACENCY MATRIX                     -->
+      <!-- ======================================================= -->
+      <h2>6. Menampilkan Adjacency Matrix (Matriks Keteradjacency)</h2>
+      <p>Pada sel ini dilakukan konversi struktur graf menjadi matriks ketetanggaan (<em>adjacency matrix</em>) menggunakan fungsi <code>nx.to_numpy_array()</code> untuk melihat representasi matriks hubungan antar simpul.</p>
+
+      <div class="code-cell">
+        <div class="code-header">
+          <span class="play-btn">▶</span>
+          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
+        </div>
+<pre><code><span class="hl-cmt"># 1. Adjacency Matrix Graf Tidak Berarah</span>
+<span class="hl-func">print</span>(<span class="hl-str">"=== ADJACENCY MATRIX (GRAF TIDAK BERARAH) ==="</span>)
+<span class="hl-func">print</span>(nx.<span class="hl-func">to_numpy_array</span>(G_undirected, nodelist=nodes, dtype=<span class="hl-type">int</span>))
+
+<span class="hl-cmt"># 2. Adjacency Matrix Graf Berarah</span>
+<span class="hl-func">print</span>(<span class="hl-str">"\n=== ADJACENCY MATRIX (GRAF BERARAH) ==="</span>)
+<span class="hl-func">print</span>(nx.<span class="hl-func">to_numpy_array</span>(G_directed, nodelist=nodes, dtype=<span class="hl-type">int</span>))</code></pre>
+      </div>
+      <div class="output-cell">
+        <div class="output-label">Output</div>
+        <pre class="output-log">=== ADJACENCY MATRIX (GRAF TIDAK BERARAH) ===
+[[0 1 1 1 0]
+ [1 0 1 1 0]
+ [1 1 0 1 0]
+ [1 1 1 0 1]
+ [0 0 0 1 0]]
+
+=== ADJACENCY MATRIX (GRAF BERARAH) ===
+[[0 1 1 0 0]
+ [0 0 1 0 0]
+ [0 0 0 1 0]
+ [0 0 0 0 1]
+ [1 0 0 0 0]]</pre>
       </div>
 
     </main>
