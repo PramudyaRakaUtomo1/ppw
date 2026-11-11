@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Classification - Web Mining</title>
+  <title>Graph - Web Mining</title>
   <style>
     :root {
       --sidebar: #b6b6b6;
@@ -149,8 +149,8 @@
     }
 
     /* =========================
-        CODE BOX / CELL JUPYTER
-        ========================= */
+       CODE BOX / CELL JUPYTER
+       ========================= */
 
     .code-cell {
       background-color: var(--editorBg);
@@ -226,40 +226,11 @@
       font-weight: bold;
     }
 
-    .output-log {
-      margin: 0;
-      white-space: pre-wrap;
-      line-height: 1.4;
-      color: #d1d5db;
-    }
-
-    /* Custom Table Styling for DataFrame Output */
-    .dataframe-table {
-      width: 100%;
-      border-collapse: collapse;
+    .output-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
       margin-top: 8px;
-      margin-bottom: 12px;
-      font-size: 12px;
-      text-align: left;
-    }
-
-    .dataframe-table th, .dataframe-table td {
-      padding: 8px 10px;
-      border: 1px solid #333;
-      white-space: nowrap;
-      max-width: 300px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .dataframe-table th {
-      background-color: #252526;
-      color: #ffffff;
-      font-weight: 600;
-    }
-
-    .dataframe-table tr:nth-child(even) {
-      background-color: #1e1e1e;
     }
 
     /* Syntax Highlighting */
@@ -345,302 +316,85 @@
         </a>
       </div>
 
-      <h1>Klasifikasi Berita</h1>
+      <h1>Graph Analysis</h1>
 
-      <!-- SEL 1: INISIALISASI & FUNGSI UTAMA -->
-      <h2>1. Inisialisasi & Fungsi Utama</h2>
-      <p>Pada tahapan ini melakukan pengumpulan data (web scraping) berita dari situs Detik.com serta pemrosesan teks (Text Preprocessing) untuk keperluan Machine Learning / Natural Language Processing (NLP).</p>
+      <!-- SEL GRAPH -->
+      <h2>Membuat Graph Berarah dan Tidak Berarah Menggunakan NetworkX</h2>
+      <p>Pada tahapan ini dilakukan pemodelan dan visualisasi struktur graf menggunakan pustaka <code>NetworkX</code> dan <code>Matplotlib</code>. Pemodelan mencakup Graf Tidak Berarah (Undirected Graph) dan Graf Berarah (Directed Graph) dengan 5 simpul (A, B, C, D, E).</p>
+      
       <div class="code-cell">
         <div class="code-header">
           <span class="play-btn">▶</span>
           <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
         </div>
-<pre><code><span class="hl-kw">import</span> os
-<span class="hl-kw">import</span> re
-<span class="hl-kw">import</span> time
-<span class="hl-kw">from</span> datetime <span class="hl-kw">import</span> datetime
-<span class="hl-kw">import</span> requests
-<span class="hl-kw">from</span> bs4 <span class="hl-kw">import</span> BeautifulSoup
-<span class="hl-kw">import</span> pandas <span class="hl-kw">as</span> pd
-<span class="hl-kw">import</span> numpy <span class="hl-kw">as</span> np
+<pre><code><span class="hl-kw">import</span> networkx <span class="hl-kw">as</span> nx
+<span class="hl-kw">import</span> matplotlib.pyplot <span class="hl-kw">as</span> plt
 
-<span class="hl-kw">from</span> sklearn.model_selection <span class="hl-kw">import</span> train_test_split
-<span class="hl-kw">from</span> sklearn.feature_extraction.text <span class="hl-kw">import</span> TfidfVectorizer
-<span class="hl-kw">from</span> sklearn.svm <span class="hl-kw">import</span> SVC
-<span class="hl-kw">from</span> sklearn.metrics <span class="hl-kw">import</span> accuracy_score, classification_report
-<span class="hl-kw">from</span> gensim.models <span class="hl-kw">import</span> Word2Vec
+<span class="hl-cmt"># Definisi simpul (vertices)</span>
+nodes = [<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>]
 
-<span class="hl-func">print</span>(<span class="hl-str">"=== 1. INISIALISASI & FUNGSI UTAMA ==="</span>)
+<span class="hl-cmt"># 1. MEMBUAT GRAF TIDAK BERARAH (Undirected)</span>
+G_undirected = nx.<span class="hl-func">Graph</span>()
+G_undirected.<span class="hl-func">add_nodes_from</span>(nodes)
+edges_undirected = [(<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'C'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'D'</span>),
+                    (<span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>), (<span class="hl-str">'B'</span>, <span class="hl-str">'D'</span>),
+                    (<span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>), (<span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>)]
+G_undirected.<span class="hl-func">add_edges_from</span>(edges_undirected)
 
-<span class="hl-cmt"># Fungsi Scraping Konten dari URL Detik.com</span>
-<span class="hl-kw">def</span> <span class="hl-func">scrape_detik_article</span>(url):
-    <span class="hl-kw">try</span>:
-        headers = {<span class="hl-str">'User-Agent'</span>: <span class="hl-str">'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'</span>}
-        response = requests.<span class="hl-func">get</span>(url, headers=headers, timeout=<span class="hl-str">10</span>)
-        <span class="hl-kw">if</span> response.status_code != <span class="hl-str">200</span>:
-            <span class="hl-kw">return</span> <span class="hl-kw">None</span>, <span class="hl-kw">None</span>, f<span class="hl-str">"Gagal mengakses halaman web (Status code: {response.status_code})."</span>
-        
-        soup = BeautifulSoup(response.text, <span class="hl-str">'html.parser'</span>)
-        title_tag = soup.<span class="hl-func">find</span>(<span class="hl-str">'h1'</span>, {<span class="hl-str">'class'</span>: <span class="hl-str">'detail__title'</span>}) <span class="hl-kw">or</span> soup.<span class="hl-func">find</span>(<span class="hl-str">'h1'</span>)
-        title = title_tag.text.<span class="hl-func">strip</span>() <span class="hl-kw">if</span> title_tag <span class="hl-kw">else</span> <span class="hl-str">"Judul Tidak Ditemukan"</span>
-        
-        article_body = soup.<span class="hl-func">find</span>(<span class="hl-str">'div'</span>, {<span class="hl-str">'class'</span>: <span class="hl-str">'detail__body-text'</span>})
-        <span class="hl-kw">if</span> article_body:
-            <span class="hl-kw">for</span> s <span class="hl-kw">in</span> article_body.<span class="hl-func">find_all</span>([<span class="hl-str">'script'</span>, <span class="hl-str">'style'</span>, <span class="hl-str">'table'</span>, <span class="hl-str">'div'</span>]):
-                s.<span class="hl-func">decompose</span>()
-            paragraphs = article_body.<span class="hl-func">find_all</span>(<span class="hl-str">'p'</span>)
-            content = <span class="hl-str">" "</span>.<span class="hl-func">join</span>([p.text.<span class="hl-func">strip</span>() <span class="hl-kw">for</span> p <span class="hl-kw">in</span> paragraphs])
-        <span class="hl-kw">else</span>:
-            content = <span class="hl-str">"Isi artikel tidak dapat diekstrak secara otomatis."</span>
-            
-        <span class="hl-kw">return</span> title, content, <span class="hl-kw">None</span>
-    <span class="hl-kw">except</span> Exception <span class="hl-kw">as</span> e:
-        <span class="hl-kw">return</span> <span class="hl-kw">None</span>, <span class="hl-kw">None</span>, <span class="hl-func">str</span>(e)
+<span class="hl-cmt"># 2. MEMBUAT GRAF BERARAH (Directed / DiGraph)</span>
+G_directed = nx.<span class="hl-func">DiGraph</span>()
+G_directed.<span class="hl-func">add_nodes_from</span>(nodes)
+edges_directed = [(<span class="hl-str">'A'</span>, <span class="hl-str">'B'</span>), (<span class="hl-str">'A'</span>, <span class="hl-str">'C'</span>),
+                  (<span class="hl-str">'B'</span>, <span class="hl-str">'C'</span>),
+                  (<span class="hl-str">'C'</span>, <span class="hl-str">'D'</span>),
+                  (<span class="hl-str">'D'</span>, <span class="hl-str">'E'</span>),
+                  (<span class="hl-str">'E'</span>, <span class="hl-str">'A'</span>)]
+G_directed.<span class="hl-func">add_edges_from</span>(edges_directed)
 
-<span class="hl-cmt"># Fungsi Preprocessing Teks Lengkap</span>
-<span class="hl-kw">def</span> <span class="hl-func">text_preprocessing</span>(text):
-    case_folded = text.<span class="hl-func">lower</span>()
-    cleaned = re.<span class="hl-func">sub</span>(<span class="hl-str">r'[^a-z\s]'</span>, <span class="hl-str">''</span>, case_folded)
-    cleaned = re.<span class="hl-func">sub</span>(<span class="hl-str">r'\s+'</span>, <span class="hl-str">' '</span>, cleaned).<span class="hl-func">strip</span>()
-    tokens = cleaned.<span class="hl-func">split</span>()
+<span class="hl-cmt"># Fungsi untuk visualisasi berdampingan</span>
+<span class="hl-kw">def</span> <span class="hl-func">draw_graphs</span>(G_undir, G_dir):
+    fig, axes = plt.<span class="hl-func">subplots</span>(<span class="hl-str">1</span>, <span class="hl-str">2</span>, figsize=(<span class="hl-str">16</span>, <span class="hl-str">8</span>))
     
-    stopwords_id = {
-        <span class="hl-str">'yang'</span>, <span class="hl-str">'untuk'</span>, <span class="hl-str">'dan'</span>, <span class="hl-str">'di'</span>, <span class="hl-str">'pada'</span>, <span class="hl-str">'ke'</span>, <span class="hl-str">'para'</span>, <span class="hl-str">'namun'</span>, <span class="hl-str">'menurut'</span>, 
-        <span class="hl-str">'antara'</span>, <span class="hl-str">'dia'</span>, <span class="hl-str">'dua'</span>, <span class="hl-str">'ia'</span>, <span class="hl-str">'seperti'</span>, <span class="hl-str">'jika'</span>, <span class="hl-str">'sehingga'</span>, <span class="hl-str">'kembali'</span>, 
-        <span class="hl-str">'dari'</span>, <span class="hl-str">'ini'</span>, <span class="hl-str">'itu'</span>, <span class="hl-str">'dengan'</span>, <span class="hl-str">'adalah'</span>, <span class="hl-str">'tersebut'</span>, <span class="hl-str">'oleh'</span>, <span class="hl-str">'saat'</span>, 
-        <span class="hl-str">'sebagai'</span>, <span class="hl-str">'kepada'</span>, <span class="hl-str">'karena'</span>, <span class="hl-str">'mereka'</span>, <span class="hl-str">'sebuah'</span>, <span class="hl-str">'lain'</span>, <span class="hl-str">'anda'</span>
-    }
-    filtered_tokens = [w <span class="hl-kw">for</span> w <span class="hl-kw">in</span> tokens <span class="hl-kw">if</span> w <span class="hl-kw">not in</span> stopwords_id]
+    <span class="hl-cmt"># Layout melingkar agar posisi simpul konsisten</span>
+    pos = nx.<span class="hl-func">circular_layout</span>(nodes)
     
-    stemmed_tokens = []
-    <span class="hl-kw">for</span> w <span class="hl-kw">in</span> filtered_tokens:
-        <span class="hl-kw">if</span> w.<span class="hl-func">endswith</span>(<span class="hl-str">'kan'</span>):
-            w = w[:-3]
-        <span class="hl-kw">elif</span> w.<span class="hl-func">endswith</span>(<span class="hl-str">'an'</span>):
-            w = w[:-2]
-        <span class="hl-kw">elif</span> w.<span class="hl-func">endswith</span>(<span class="hl-str">'i'</span>):
-            w = w[:-1]
-        stemmed_tokens.<span class="hl-func">append</span>(w)
-        
-    <span class="hl-kw">return</span> {
-        <span class="hl-str">"case_folded"</span>: case_folded,
-        <span class="hl-str">"cleaned"</span>: cleaned,
-        <span class="hl-str">"tokens"</span>: tokens,
-        <span class="hl-str">"stopwords_removed"</span>: filtered_tokens,
-        <span class="hl-str">"stemmed"</span>: stemmed_tokens,
-        <span class="hl-str">"tokens_str"</span>: <span class="hl-str">", "</span>.<span class="hl-func">join</span>(tokens),
-        <span class="hl-str">"stopwords_removed_str"</span>: <span class="hl-str">", "</span>.<span class="hl-func">join</span>(filtered_tokens),
-        <span class="hl-str">"stemmed_str"</span>: <span class="hl-str">", "</span>.<span class="hl-func">join</span>(stemmed_tokens)
-    }
+    <span class="hl-cmt"># Kustomisasi visual</span>
+    node_size = <span class="hl-str">2000</span>
+    font_size = <span class="hl-str">18</span>
+    font_color = <span class="hl-str">'white'</span>
+    
+    <span class="hl-cmt"># --- Gambar Graf Tidak Berarah (Kiri) ---</span>
+    axes[<span class="hl-str">0</span>].<span class="hl-func">set_title</span>(<span class="hl-str">"GRAF TIDAK BERARAH\n(UNDIRECTED GRAPH)"</span>, fontsize=<span class="hl-str">16</span>, fontweight=<span class="hl-str">'bold'</span>, color=<span class="hl-str">'navy'</span>)
+    nx.<span class="hl-func">draw_networkx_nodes</span>(G_undir, pos, ax=axes[<span class="hl-str">0</span>], node_color=<span class="hl-str">'dodgerblue'</span>, node_size=node_size, edgecolors=<span class="hl-str">'black'</span>)
+    nx.<span class="hl-func">draw_networkx_labels</span>(G_undir, pos, ax=axes[<span class="hl-str">0</span>], font_size=font_size, font_color=font_color, font_weight=<span class="hl-str">'bold'</span>)
+    nx.<span class="hl-func">draw_networkx_edges</span>(G_undir, pos, ax=axes[<span class="hl-str">0</span>], edge_color=<span class="hl-str">'black'</span>, width=<span class="hl-str">2</span>)
+    axes[<span class="hl-str">0</span>].<span class="hl-func">axis</span>(<span class="hl-str">'off'</span>)
 
-<span class="hl-func">print</span>(<span class="hl-str">"Fungsi berhasil dimuat."</span>)</code></pre>
+    <span class="hl-cmt"># --- Gambar Graf Berarah dengan Panah Jelas (Kanan) ---</span>
+    axes[<span class="hl-str">1</span>].<span class="hl-func">set_title</span>(<span class="hl-str">"GRAF BERARAH\n(DIRECTED GRAPH)"</span>, fontsize=<span class="hl-str">16</span>, fontweight=<span class="hl-str">'bold'</span>, color=<span class="hl-str">'darkorange'</span>)
+    nx.<span class="hl-func">draw_networkx_nodes</span>(G_dir, pos, ax=axes[<span class="hl-str">1</span>], node_color=<span class="hl-str">'coral'</span>, node_size=node_size, edgecolors=<span class="hl-str">'black'</span>)
+    nx.<span class="hl-func">draw_networkx_labels</span>(G_dir, pos, ax=axes[<span class="hl-str">1</span>], font_size=font_size, font_color=font_color, font_weight=<span class="hl-str">'bold'</span>)
+    
+    <span class="hl-cmt"># Menambahkan panah dengan lengkungan (connectionstyle) & margin agar tidak tertutup simpul</span>
+    nx.<span class="hl-func">draw_networkx_edges</span>(
+        G_dir, pos, ax=axes[<span class="hl-str">1</span>], 
+        edge_color=<span class="hl-str">'black'</span>, width=<span class="hl-str">2</span>, 
+        arrowstyle=<span class="hl-str">'-|>'</span>, arrowsize=<span class="hl-str">30</span>, 
+        connectionstyle=<span class="hl-str">'arc3,rad=0.15'</span>, 
+        min_target_margin=<span class="hl-str">25</span>
+    )
+    axes[<span class="hl-str">1</span>].<span class="hl-func">axis</span>(<span class="hl-str">'off'</span>)
+
+    plt.<span class="hl-func">tight_layout</span>()
+    plt.<span class="hl-func">show</span>()
+
+<span class="hl-cmt"># Jalankan fungsi visualisasi</span>
+<span class="hl-func">draw_graphs</span>(G_undirected, G_directed)</code></pre>
       </div>
       <div class="output-cell">
         <div class="output-label">Output</div>
-        <div class="output-log">=== 1. INISIALISASI & FUNGSI UTAMA ===
-Fungsi berhasil dimuat.</div>
-      </div>
-
-      <!-- SEL 2: EKSEKUSI KLASIFIKASI BERITA -->
-      <h2>2. Eksekusi Klasifikasi Berita</h2>
-      <p>Kemudian pada tahap ini melakukan klasifikasi berita menggunakan SVM, menampilkan hasil prediksi suatu berita apakah berita tersebut masuk kedalam berita sport atau finance, menampilkan hasil Preprocessing dari berita yang telah di inputkan menggunakan URL, kemudian menampilkan hasil skip-gram 10 dimensi dan menampilkan bobot TF-IDF teratas </p>
-      <div class="code-cell">
-        <div class="code-header">
-          <span class="play-btn">▶</span>
-          <button class="copy-btn" onclick="copyCode(this)">copy code 📋</button>
-        </div>
-<pre><code><span class="hl-func">print</span>(<span class="hl-str">"=== 2. EKSEKUSI KLASIFIKASI BERITA ==="</span>)
-
-<span class="hl-cmt"># Pilihlah mode input: 'url' atau 'manual'</span>
-input_mode = <span class="hl-str">"url"</span>
-
-<span class="hl-kw">if</span> input_mode == <span class="hl-str">"url"</span>:
-    target_url = <span class="hl-str">"https://finance.detik.com/berita-ekonomi-bisnis/d-8730237/garuda-cetak-pendapatan-rp-49-24-triliun-di-tengah-tekanan-harga-avtur"</span>
-    <span class="hl-func">print</span>(f<span class="hl-str">"Melakukan scraping dari URL: {target_url}\n"</span>)
-    title_val, content_val, err = <span class="hl-func">scrape_detik_article</span>(target_url)
-    <span class="hl-kw">if</span> err:
-        <span class="hl-func">print</span>(f<span class="hl-str">"Error: {err}"</span>)
-    <span class="hl-kw">else</span>:
-        <span class="hl-func">print</span>(f<span class="hl-str">"Judul: {title_val}\n"</span>)
-<span class="hl-kw">else</span>:
-    target_url = <span class="hl-str">"Input Manual Colab"</span>
-    title_val = <span class="hl-str">"Artikel Analisis Mandiri"</span>
-    content_val = <span class="hl-str">"Bank Indonesia memutuskan untuk menahan suku bunga acuan demi menjaga stabilitas nilai tukar rupiah di tengah ketidakpastian global."</span>
-    <span class="hl-func">print</span>(f<span class="hl-str">"Menggunakan teks manual:\n{content_val}\n"</span>)
-
-<span class="hl-kw">if</span> <span class="hl-str">'content_val'</span> <span class="hl-kw">in</span> <span class="hl-func">locals</span>() <span class="hl-kw">and</span> content_val:
-    prep_res = <span class="hl-func">text_preprocessing</span>(content_val)
-    
-    corpus_w2v = [prep_res[<span class="hl-str">"stemmed"</span>]]
-    <span class="hl-kw">if</span> <span class="hl-func">len</span>(prep_res[<span class="hl-str">"stemmed"</span>]) > <span class="hl-str">0</span>:
-        w2v_model = <span class="hl-func">Word2Vec</span>(
-            sentences=corpus_w2v, 
-            vector_size=<span class="hl-str">10</span>, 
-            window=<span class="hl-str">5</span>, 
-            min_count=<span class="hl-str">1</span>, 
-            sg=<span class="hl-str">1</span>, 
-            seed=<span class="hl-str">42</span>
-        )
-        
-        word_vectors = []
-        word_labels = []
-        <span class="hl-kw">for</span> word <span class="hl-kw">in</span> <span class="hl-func">set</span>(prep_res[<span class="hl-str">"stemmed"</span>]):
-            <span class="hl-kw">if</span> word <span class="hl-kw">in</span> w2v_model.wv:
-                word_vectors.<span class="hl-func">append</span>(w2v_model.wv[word])
-                word_labels.<span class="hl-func">append</span>(word)
-        
-        <span class="hl-kw">if</span> word_vectors:
-            df_vec = pd.<span class="hl-func">DataFrame</span>(word_vectors, index=word_labels, columns=[f<span class="hl-str">"Dim_{i+1}"</span> <span class="hl-kw">for</span> i <span class="hl-kw">in</span> <span class="hl-func">range</span>(<span class="hl-str">10</span>)])
-        <span class="hl-kw">else</span>:
-            df_vec = pd.<span class="hl-func">DataFrame</span>(columns=[f<span class="hl-str">"Dim_{i+1}"</span> <span class="hl-kw">for</span> i <span class="hl-kw">in</span> <span class="hl-func">range</span>(<span class="hl-str">10</span>)])
-    <span class="hl-kw">else</span>:
-        df_vec = pd.<span class="hl-func">DataFrame</span>(columns=[f<span class="hl-str">"Dim_{i+1}"</span> <span class="hl-kw">for</span> i <span class="hl-kw">in</span> <span class="hl-func">range</span>(<span class="hl-str">10</span>)])
-
-    <span class="hl-cmt"># Dummy Vectorizer & Model Simulation for Display</span>
-    vectorizer = <span class="hl-func">TfidfVectorizer</span>()
-    X_dummy = vectorizer.<span class="hl-func">fit_transform</span>([content_val])
-    svm_model = <span class="hl-func">SVC</span>(probability=<span class="hl-kw">True</span>, random_state=<span class="hl-str">42</span>)
-    svm_model.<span class="hl-func">fit</span>(X_dummy, [<span class="hl-str">1</span>])
-    
-    X_pred = vectorizer.<span class="hl-func">transform</span>([content_val])
-    svm_pred = <span class="hl-str">"1"</span>
-    svm_probs = [<span class="hl-str">0.1245</span>, <span class="hl-str">0.8755</span>]
-    classes = [<span class="hl-str">"Sport"</span>, <span class="hl-str">"Finance"</span>]
-    
-    feature_names = vectorizer.<span class="hl-func">get_feature_names_out</span>()
-    tfidf_array = X_pred.<span class="hl-func">toarray</span>()[<span class="hl-str">0</span>]
-    non_zero_indices = np.<span class="hl-func">nonzero</span>(tfidf_array)[<span class="hl-str">0</span>]
-    tfidf_features_list = <span class="hl-func">sorted</span>([(feature_names[i], tfidf_array[i]) <span class="hl-kw">for</span> i <span class="hl-kw">in</span> non_zero_indices], key=<span class="hl-kw">lambda</span> x: x[<span class="hl-str">1</span>], reverse=<span class="hl-kw">True</span>)
-    tfidf_str = <span class="hl-str">", "</span>.<span class="hl-func">join</span>([f<span class="hl-str">"{word}: {score:.4f}"</span> <span class="hl-kw">for</span> word, score <span class="hl-kw">in</span> tfidf_features_list[:<span class="hl-str">30</span>]])
-
-    <span class="hl-func">print</span>(<span class="hl-str">"=========================================="</span>)
-    <span class="hl-func">print</span>(f<span class="hl-str">"📊 HASIL PREDIKSI SVM: {svm_pred}"</span>)
-    <span class="hl-func">print</span>(<span class="hl-str">"=========================================="</span>)
-    <span class="hl-func">print</span>(<span class="hl-str">"Distribusi Keyakinan Probabilitas:"</span>)
-    <span class="hl-kw">for</span> idx, cls <span class="hl-kw">in</span> <span class="hl-func">enumerate</span>(classes):
-        <span class="hl-func">print</span>(f<span class="hl-str">" - {cls}: {svm_probs[idx]*100:.2f}%"</span>)
-    
-    <span class="hl-func">print</span>(<span class="hl-str">"\n--- HASIL PREPROCESSING ---"</span>)
-    <span class="hl-func">print</span>(f<span class="hl-str">"Case Folding        : {prep_res['case_folded'][:100]}..."</span>)
-    <span class="hl-func">print</span>(f<span class="hl-str">"Cleaning            : {prep_res['cleaned'][:100]}..."</span>)
-    <span class="hl-func">print</span>(f<span class="hl-str">"Stopword Removal    : {prep_res['stopwords_removed_str'][:100]}..."</span>)
-    <span class="hl-func">print</span>(f<span class="hl-str">"Stemming            : {prep_res['stemmed_str'][:100]}..."</span>)
-    
-    <span class="hl-func">print</span>(<span class="hl-str">"\n--- WORD EMBEDDING (SKIP-GRAM) MATRIKS (10 Dimensi) ---"</span>)
-    <span class="hl-func">display</span>(df_vec.<span class="hl-func">head</span>(<span class="hl-str">10</span>))
-    
-    <span class="hl-func">print</span>(<span class="hl-str">"\n--- BOBOT TF-IDF TERATAS ---"</span>)
-    <span class="hl-func">print</span>(tfidf_str <span class="hl-kw">if</span> tfidf_str <span class="hl-kw">else</span> <span class="hl-str">"Tidak ada fitur TF-IDF signifikan."</span>)</code></pre>
-      </div>
-      <div class="output-cell">
-        <div class="output-label">Output</div>
-        <div class="output-log">=== 2. EKSEKUSI KLASIFIKASI BERITA ===
-Melakukan scraping dari URL: https://finance.detik.com/berita-ekonomi-bisnis/d-8730237/garuda-cetak-pendapatan-rp-49-24-triliun-di-tengah-tekanan-harga-avtur
-
-Judul: Garuda Cetak Pendapatan Rp 49,24 Triliun di Tengah Tekanan Harga Avtur
-
-==========================================
-📊 HASIL PREDIKSI SVM: Finance
-==========================================
-Distribusi Keyakinan Probabilitas:
- - Sport: 12.45%
- - Finance: 87.55%
-
---- HASIL PREPROCESSING ---
-Case Folding        : garuda cetak pendapatan rp 49,24 triliun di tengah tekanan harga avtur...
-Cleaning            : garuda cetak pendapatan rp triliun di tengah tekanan harga avtur...
-Stopword Removal    : garuda cetak pendapatan rp triliun tengah tekanan harga avtur...
-Stemming            : garuda cetak dapat dapat rp triliun tengah tekan harga avtur...
-
---- WORD EMBEDDING (SKIP-GRAM) MATRIKS (10 Dimensi) ---</div>
-        <table class="dataframe-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Dim_1</th>
-              <th>Dim_2</th>
-              <th>Dim_3</th>
-              <th>Dim_4</th>
-              <th>Dim_5</th>
-              <th>Dim_6</th>
-              <th>Dim_7</th>
-              <th>Dim_8</th>
-              <th>Dim_9</th>
-              <th>Dim_10</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th>garuda</th>
-              <td>0.0124</td>
-              <td>-0.0412</td>
-              <td>0.0210</td>
-              <td>0.0054</td>
-              <td>-0.0182</td>
-              <td>0.0341</td>
-              <td>-0.0089</td>
-              <td>0.0192</td>
-              <td>-0.0254</td>
-              <td>0.0110</td>
-            </tr>
-            <tr>
-              <th>cetak</th>
-              <td>-0.0082</td>
-              <td>0.0195</td>
-              <td>-0.0142</td>
-              <td>0.0221</td>
-              <td>0.0094</td>
-              <td>-0.0125</td>
-              <td>0.0310</td>
-              <td>-0.0041</td>
-              <td>0.0182</td>
-              <td>-0.0194</td>
-            </tr>
-            <tr>
-              <th>pendapatan</th>
-              <td>0.0315</td>
-              <td>0.0084</td>
-              <td>-0.0291</td>
-              <td>0.0110</td>
-              <td>-0.0051</td>
-              <td>0.0214</td>
-              <td>-0.0195</td>
-              <td>0.0082</td>
-              <td>0.0141</td>
-              <td>-0.0075</td>
-            </tr>
-            <tr>
-              <th>triliun</th>
-              <td>-0.0192</td>
-              <td>0.0251</td>
-              <td>0.0184</td>
-              <td>-0.0082</td>
-              <td>0.0215</td>
-              <td>-0.0091</td>
-              <td>0.0142</td>
-              <td>-0.0251</td>
-              <td>0.0064</td>
-              <td>0.0189</td>
-            </tr>
-            <tr>
-              <th>avtur</th>
-              <td>0.0041</td>
-              <td>-0.0182</td>
-              <td>0.0312</td>
-              <td>-0.0194</td>
-              <td>0.0112</td>
-              <td>0.0084</td>
-              <td>-0.0215</td>
-              <td>0.0142</td>
-              <td>-0.0091</td>
-              <td>0.0224</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="output-log">
---- BOBOT TF-IDF TERATAS ---
-garuda: 0.3542, pendapatan: 0.3120, triliun: 0.2890, avtur: 0.2654, tekan: 0.2105, harga: 0.1982
-        </div>
+        <!-- Tempatkan file gambar plot hasil eksekusi matplotlib di sini -->
+        <img src="graph_output.png" alt="Visualisasi Graph NetworkX" class="output-image" />
       </div>
 
     </main>
